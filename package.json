@@ -1,0 +1,47 @@
+{
+  "name": "cngn-typescript-library",
+  "version": "1.0.0",
+  "description": "A lightweight Typescript library to give you the best experience with managing your asc merchant account",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/asc-africa/cngn-typescript-library",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "release": "npm run test && npm run build && npm version patch && npm pack && gh release create $(node -p \"require('./package.json').version\") --generate-notes"
+  },
+  "contributors": [
+    "Ezumah Jeremiah Kalu <jeremiah.ezumah@withconvexity.com> (https://cngn.co)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asc-africa/cngn-typescript-library"
+  },
+  "keywords": [
+    "cNGN",
+    "stablecoin",
+    "crypto",
+    "blockchain"
+  ],
+  "author": {
+    "name": "Convexity",
+    "email": "support@withconvexity.com",
+    "url": "https://cngn.co"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "libsodium-wrappers": "^0.7.15"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.13",
+    "@types/libsodium-wrappers": "^0.7.14",
+    "@types/node": "^22.5.5",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
