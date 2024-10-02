@@ -1,6 +1,6 @@
 {
   "name": "cngn-typescript-library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight Typescript library to give you the best experience with managing your asc merchant account",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
