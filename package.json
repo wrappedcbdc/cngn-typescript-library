@@ -4,7 +4,7 @@
   "description": "A lightweight Typescript library to give you the best experience with managing your asc merchant account",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "homepage": "https://github.com/asc-africa/cngn-typescript-library",
+  "homepage": "https://github.com/wrappedcbdc/cngn-typescript-library",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/asc-africa/cngn-typescript-library"
+    "url": "https://github.com/wrappedcbdc/cngn-typescript-library"
   },
   "keywords": [
     "cNGN",
