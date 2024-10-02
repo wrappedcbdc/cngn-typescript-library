@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.3-beta] - 2024-09-22
+## [1.0.0-beta] - 2024-09-22
 
 ### Added
 - Initial release of CNGnManager
@@ -33,5 +33,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This is a beta release. While it includes all core functionalities, it may contain bugs and is not recommended for production use.
 - Feedback and bug reports are highly appreciated and will help improve future releases.
 
-[Unreleased]: https://github.com/asc-africa/cngn-manager/compare/v1.0.3-beta...HEAD
-[1.0.3-beta]: https://github.com/asc-africa/cngn-manager/releases/tag/v1.0.3-beta
+[Unreleased]: https://github.com/asc-africa/cngn-manager/compare/v1.0.1-beta...HEAD
+[1.0.0-beta]: https://github.com/asc-africa/cngn-manager/releases/tag/v1.0.0-beta

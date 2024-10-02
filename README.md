@@ -20,7 +20,7 @@ CNGnManager is a TypeScript library for interacting with a CNGN API. It provides
 To install CNGnManager and its dependencies, run:
 
 ```bash
-npm install cngn-manager
+npm install cngn-typescript-library
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ npm install cngn-manager
 First, import the `CNGnManager` class and necessary types:
 
 ```typescript
-import { CNGnManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-manager';
+import { CNGnManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-typescript-library';
 ```
 
 Then, create an instance of `CNGnManager` with your secrets:
