@@ -17,7 +17,7 @@ import {
 
 const API_CURRENT_VERSION = 'v1';
 
-export class CNGnManager {
+export class cNGNManager {
 
     private readonly axiosInstance: AxiosInstance;
 

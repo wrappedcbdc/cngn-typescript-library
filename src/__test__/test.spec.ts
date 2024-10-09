@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network} from '../types';
-import {CNGnManager} from "../index";
+import {cNGNManager} from "../index";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
 
@@ -9,7 +9,7 @@ jest.mock('../utils/aes.standard');
 jest.mock('../utils/Ed25519.standard');
 
 describe('CNGnManager', () => {
-    let manager: CNGnManager;
+    let manager: cNGNManager;
     let mockAxiosInstance: any;
     const mockSecrets: Secrets = {
         apiKey: 'test-api-key',
@@ -27,7 +27,7 @@ describe('CNGnManager', () => {
             request: jest.fn(),
         };
         (axios.create as jest.Mock).mockReturnValue(mockAxiosInstance);
-        manager = new CNGnManager(mockSecrets);
+        manager = new cNGNManager(mockSecrets);
         jest.clearAllMocks();
     });
 
