@@ -1,13 +1,13 @@
 import { ec as EC } from 'elliptic';
 import keccak256 from 'keccak256';
 import * as bip39 from 'bip39';
-import {hdkey} from 'ethereumjs-wallet';
+import { hdkey } from 'ethereumjs-wallet';
 import { Network, GeneratedWalletAddress } from "../types";
 import {TronWeb} from 'tronweb';
 
 export class CryptoWallet {
     private static ec = new EC('secp256k1');
-    private static MNEMONIC_ENTROPY_BYTES = 128;
+    private static MNEMONIC_ENTROPY_BYTES = 128; // 128 bits for a 12-word mnemonic phrase
 
     static getPublicKey(privateKey: string): string {
         const keyPair = this.ec.keyFromPrivate(privateKey, 'hex');
@@ -29,19 +29,22 @@ export class CryptoWallet {
         return bip39.generateMnemonic(this.MNEMONIC_ENTROPY_BYTES);
     }
 
+    // Mapping derivation paths for each network
+    private static readonly DERIVATION_PATHS: { [key in Network]?: string } = {
+        [Network.eth]: `m/44'/60'/0'/0/0`,
+        [Network.bsc]: `m/44'/60'/0'/0/0`,
+        [Network.atc]: `m/44'/60'/0'/0/0`,
+        [Network.xbn]: `m/44'/60'/0'/0/0`,
+        [Network.matic]: `m/44'/60'/0'/0/0`,
+        [Network.trx]: `m/44'/195'/0'/0/0`
+    };
+
     private static getDerivationPath(network: Network): string {
-        switch (network) {
-            case Network.bsc:
-            case Network.atc:
-            case Network.xbn:
-            case Network.eth:
-            case Network.matic:
-                return `m/44'/60'/0'/0/0`;
-            case Network.trx:
-                return `m/44'/195'/0'/0/0`;
-            default:
-                throw new Error(`Unsupported network: ${network}`);
+        const path = this.DERIVATION_PATHS[network];
+        if (!path) {
+            throw new Error(`Unsupported network: ${network}`);
         }
+        return path;
     }
 
     static getPrivateKeyFromMnemonic(mnemonic: string, network: Network): string {
@@ -54,16 +57,14 @@ export class CryptoWallet {
 
     static getAddressFromPublicKey(publicKey: string, network: Network): string {
         switch (network) {
+            case Network.eth:
             case Network.bsc:
             case Network.atc:
             case Network.xbn:
-            case Network.eth:
             case Network.matic:
                 return this.getEthereumStyleAddress(publicKey);
-
             case Network.trx:
                 return this.getTronAddress(publicKey);
-
             default:
                 throw new Error(`Unsupported network: ${network}`);
         }
