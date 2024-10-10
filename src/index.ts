@@ -5,15 +5,18 @@ import {
     Balance,
     DepositParams,
     ExternalAccounts,
+    GeneratedWalletAddress,
     IResponse,
     IVirtualAccount,
     IWithdraw,
     MintParams,
+    Network,
     Secrets,
     SwapParams,
     Transactions,
     WhiteListAddressParams,
 } from "./types";
+import {CryptoWallet} from "./utils/crypto.wallet";
 
 const API_CURRENT_VERSION = 'v1';
 
@@ -92,6 +95,19 @@ export class cNGNManager {
 
     public async whitelistAddress(data: WhiteListAddressParams): Promise<IResponse<ExternalAccounts>> {
         return this.makeCalls('POST', '/whiteListAddress', data);
+    }
+
+    public async generateWalletAddress(network: Network): Promise<IResponse<GeneratedWalletAddress>> {
+       try {
+           const response = CryptoWallet.generateWalletWithMnemonic(network);
+           return {
+               success: true,
+               data: response
+           };
+       }
+         catch (error: any) {
+              throw new Error(`Error generating wallet: ${error.message}`);
+         }
     }
 
 }

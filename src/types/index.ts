@@ -130,3 +130,9 @@ export interface Transactions {
     businessId?: string | null;
 }
 
+export interface GeneratedWalletAddress {
+    address: string;
+    network: Network;
+    mnemonic: string;
+    privateKey: string;
+}
