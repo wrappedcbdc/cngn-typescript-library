@@ -1,6 +1,6 @@
 # CNGnManager
 
-CNGnManager is a TypeScript library for interacting with a CNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, and more.
+CNGnManager is a TypeScript library for interacting with a CNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
 
 ## Table of Contents
 
@@ -108,6 +108,16 @@ const whitelistResult = await manager.whitelistAddress(whitelistParams);
 console.log(whitelistResult);
 ```
 
+### Generate Wallet Address
+
+```typescript
+const network = Network.eth; // or any other supported network
+const walletAddress = await manager.generateWalletAddress(network);
+console.log(walletAddress);
+```
+
+This method generates a new wallet address for the specified network. The result includes the address, network, mnemonic phrase, and private key.
+
 ## Testing
 
 This project uses Jest for testing. To run the tests, follow these steps:
@@ -127,6 +137,7 @@ The tests are located in the `__tests__` directory. They cover various aspects o
 - API calls for different endpoints (GET and POST requests)
 - Encryption and decryption of data
 - Error handling for various scenarios
+- Wallet address generation for different networks
 
 ## Error Handling
 
