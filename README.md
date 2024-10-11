@@ -1,6 +1,6 @@
 # CNGnManager
 
-CNGnManager is a TypeScript library for interacting with a CNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
+cNGNManager is a TypeScript library for interacting with a CNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ CNGnManager is a TypeScript library for interacting with a CNGN API. It provides
 
 ## Installation
 
-To install CNGnManager and its dependencies, run:
+To install cNGNManager and its dependencies, run:
 
 ```bash
 npm install cngn-typescript-library
@@ -25,13 +25,13 @@ npm install cngn-typescript-library
 
 ## Usage
 
-First, import the `CNGnManager` class and necessary types:
+First, import the `cNGNManager` class and necessary types:
 
 ```typescript
-import { CNGnManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-typescript-library';
+import { cNGNManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-typescript-library';
 ```
 
-Then, create an instance of `CNGnManager` with your secrets:
+Then, create an instance of `cNGNManager` with your secrets:
 
 ```typescript
 const secrets: Secrets = {
@@ -40,7 +40,7 @@ const secrets: Secrets = {
     encryptionKey: 'your-encryption-key'
 };
 
-const manager = new CNGnManager(secrets);
+const manager = new cNGNManager(secrets);
 
 // Example: Get balance
 manager.getBalance().then(balance => console.log(balance));
