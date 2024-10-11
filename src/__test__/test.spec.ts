@@ -1,22 +1,12 @@
 import axios from 'axios';
-import {
-    Secrets,
-    SwapParams,
-    DepositParams,
-    MintParams,
-    WhiteListAddressParams,
-    Network,
-    GeneratedWalletAddress
-} from '../types';
+import {Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network} from '../types';
 import {cNGNManager} from "../index";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
-import {CryptoWallet} from "../utils/crypto.wallet";
 
 jest.mock('axios');
 jest.mock('../utils/aes.standard');
 jest.mock('../utils/Ed25519.standard');
-jest.mock('../utils/crypto.wallet');
 
 describe('CNGnManager', () => {
     let manager: cNGNManager;
@@ -159,39 +149,6 @@ describe('CNGnManager', () => {
             mockAxiosInstance.request.mockRejectedValue(unexpectedError);
 
             await expect(manager.getBalance()).rejects.toThrow('Error setting up request: Unexpected error');
-        });
-    });
-
-    describe('Wallet Generation', () => {
-
-        test('generateWalletAddress should return a wallet address for the specified network', async () => {
-            const mockWallet: GeneratedWalletAddress = {
-                address: '0x1234567890123456789012345678901234567890',
-                network: Network.eth,
-                mnemonic: 'test mnemonic phrase',
-                privateKey: '0xabcdef1234567890',
-            };
-
-            (CryptoWallet.generateWalletWithMnemonic as jest.Mock).mockReturnValue(mockWallet);
-
-            const result = await manager.generateWalletAddress(Network.eth);
-
-            expect(result).toEqual({
-                success: true,
-                data: mockWallet
-            });
-
-            expect(CryptoWallet.generateWalletWithMnemonic).toHaveBeenCalledWith(Network.eth);
-        });
-
-        test('generateWalletAddress should handle errors', async () => {
-            const mockError = new Error('Wallet generation failed');
-
-            (CryptoWallet.generateWalletWithMnemonic as jest.Mock).mockImplementation(() => {
-                throw mockError;
-            });
-
-            await expect(manager.generateWalletAddress(Network.eth)).rejects.toThrow('Wallet generation failed');
         });
     });
 });

@@ -99,15 +99,12 @@ export class cNGNManager {
 
     public async generateWalletAddress(network: Network): Promise<IResponse<GeneratedWalletAddress>> {
        try {
-           const response = CryptoWallet.generateWalletWithMnemonic(network);
-           return {
-               success: true,
-               data: response
-           };
+           const response = CryptoWallet.generateWalletWithMnemonicDetails(network);
+           return { success: true, data: response };
        }
-         catch (error: any) {
-              throw new Error(`Error generating wallet: ${error.message}`);
-         }
+       catch (error: any) {
+           throw new Error(`Error generating wallet: ${error.message}`);
+       }
     }
 
 }

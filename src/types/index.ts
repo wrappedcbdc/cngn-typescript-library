@@ -131,8 +131,8 @@ export interface Transactions {
 }
 
 export interface GeneratedWalletAddress {
+    mnemonic: string | null;
     address: string;
     network: Network;
-    mnemonic: string;
     privateKey: string;
 }
