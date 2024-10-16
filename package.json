@@ -9,7 +9,6 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "dev": "ts-node src/index.ts",
     "release": "npm run test && npm run build && npm version patch && npm pack && gh release create $(node -p \"require('./package.json').version\") --generate-notes"
   },
   "contributors": [
