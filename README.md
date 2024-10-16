@@ -1,6 +1,6 @@
-# CNGnManager
+# cNGN TypeScript Library
 
-cNGNManager is a TypeScript library for interacting with a CNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
+cNGN TypeScript Library is a TypeScript library for interacting with the cNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ cNGNManager is a TypeScript library for interacting with a CNGN API. It provides
 
 ## Installation
 
-To install cNGNManager and its dependencies, run:
+To install cNGN TypeScript Library and its dependencies, run:
 
 ```bash
 npm install cngn-typescript-library
@@ -25,10 +25,10 @@ npm install cngn-typescript-library
 
 ## Usage
 
-First, import the `cNGNManager` class and necessary types:
+First, import the necessary classes and types:
 
 ```typescript
-import { cNGNManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-typescript-library';
+import { cNGNManager, WalletManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-typescript-library';
 ```
 
 Then, create an instance of `cNGNManager` with your secrets:
@@ -48,21 +48,23 @@ manager.getBalance().then(balance => console.log(balance));
 
 ## Available Methods
 
-### Get Balance
+### cNGNManager Methods
+
+#### Get Balance
 
 ```typescript
 const balance = await manager.getBalance();
 console.log(balance);
 ```
 
-### Get Transaction History
+#### Get Transaction History
 
 ```typescript
 const transactions = await manager.getTransactionHistory();
 console.log(transactions);
 ```
 
-### Swap Between Chains
+#### Swap Between Chains
 
 ```typescript
 const swapParams: SwapParams = {
@@ -74,7 +76,7 @@ const swapResult = await manager.swapBetweenChains(swapParams);
 console.log(swapResult);
 ```
 
-### Deposit for Redemption
+#### Deposit for Redemption
 
 ```typescript
 const depositParams: DepositParams = {
@@ -86,7 +88,7 @@ const depositResult = await manager.depositForRedemption(depositParams);
 console.log(depositResult);
 ```
 
-### Create Virtual Account
+#### Create Virtual Account
 
 ```typescript
 const mintParams: MintParams = {
@@ -96,7 +98,7 @@ const virtualAccount = await manager.createVirtualAccount(mintParams);
 console.log(virtualAccount);
 ```
 
-### Whitelist Address
+#### Whitelist Address
 
 ```typescript
 const whitelistParams: WhiteListAddressParams = {
@@ -108,11 +110,13 @@ const whitelistResult = await manager.whitelistAddress(whitelistParams);
 console.log(whitelistResult);
 ```
 
-### Generate Wallet Address
+### WalletManager Methods
+
+#### Generate Wallet Address
 
 ```typescript
 const network = Network.eth; // or any other supported network
-const walletAddress = await manager.generateWalletAddress(network);
+const walletAddress = await WalletManager.generateWalletAddress(network);
 console.log(walletAddress);
 ```
 
@@ -132,7 +136,7 @@ This project uses Jest for testing. To run the tests, follow these steps:
 
 ### Test Structure
 
-The tests are located in the `__tests__` directory. They cover various aspects of the CNGnManager class, including:
+The tests are located in the `__tests__` directory. They cover various aspects of the cNGNManager and WalletManager classes, including:
 
 - API calls for different endpoints (GET and POST requests)
 - Encryption and decryption of data
@@ -145,7 +149,7 @@ The library uses a custom error handling mechanism. All API errors are caught an
 
 ## Types
 
-The library includes TypeScript definitions for all parameters and return types. Please refer to the type definitions in the source code for more details.
+The library includes TypeScript definitions for all parameters and return types. All types are defined in a single `types.ts` file for easy reference and maintenance.
 
 ## Security
 
@@ -153,7 +157,7 @@ This library uses AES encryption for request payloads and Ed25519 decryption for
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome. Feel free to check [issues page](https://github.com/asc-africa/cngn-manager/issues) if you want to contribute.
+Contributions, issues, and feature requests are welcome. Feel free to check [issues page](https://github.com/wrappedcbdc/cngn-typescript-library/issues) if you want to contribute.
 
 ## Support
 
@@ -161,4 +165,4 @@ If you have any questions or need help using the library, please open an issue i
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[ISC](https://choosealicense.com/licenses/isc/)

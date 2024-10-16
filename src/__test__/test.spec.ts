@@ -1,8 +1,15 @@
 import axios from 'axios';
-import {Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network} from '../types';
-import {cNGNManager} from "../index";
+import {
+    Secrets,
+    SwapParams,
+    DepositParams,
+    MintParams,
+    WhiteListAddressParams,
+    Network
+} from '../types';
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
+import {cNGNManager} from "../services/cngn.manager";
 
 jest.mock('axios');
 jest.mock('../utils/aes.standard');

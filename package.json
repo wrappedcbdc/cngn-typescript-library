@@ -1,6 +1,6 @@
 {
   "name": "cngn-typescript-library",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "A lightweight Typescript library to give you the best experience with managing your asc merchant account",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,6 +9,7 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test": "jest",
+    "dev": "ts-node src/index.ts",
     "release": "npm run test && npm run build && npm version patch && npm pack && gh release create $(node -p \"require('./package.json').version\") --generate-notes"
   },
   "contributors": [
