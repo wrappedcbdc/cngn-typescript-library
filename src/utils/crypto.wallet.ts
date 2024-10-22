@@ -1,4 +1,4 @@
-import { ec as EC } from 'elliptic';
+import { secp256k1 } from '@noble/curves/secp256k1';
 import keccak256 from 'keccak256';
 import * as bip39 from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
@@ -6,12 +6,11 @@ import { Network, GeneratedWalletAddress } from "../types";
 import { TronWeb } from 'tronweb';
 import nacl from 'tweetnacl';
 import WAValidator from 'multicoin-address-validator';
-import { Keypair } from 'stellar-sdk';
+import { Keypair } from '@stellar/stellar-sdk';
 import * as ed25519 from 'ed25519-hd-key';
 
 export class CryptoWallet {
 
-    private static ec = new EC('secp256k1');
     private static MNEMONIC_ENTROPY_BYTES = 128;
 
     private static DERIVATION_PATHS: { [key in Network]?: string } = {
@@ -49,7 +48,7 @@ export class CryptoWallet {
             const keyPair = nacl.sign.keyPair.fromSeed(Buffer.from(privateKey, 'hex'));
             return Buffer.from(keyPair.publicKey).toString('hex');
         }
-        return this.ec.keyFromPrivate(privateKey, 'hex').getPublic('hex');
+        return secp256k1.getPublicKey(privateKey, false).slice(1).toString();
     }
 
     private static getPrivateKeyFromMnemonic(mnemonic: string, network: Network): string {

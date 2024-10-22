@@ -20,7 +20,7 @@ cNGN TypeScript Library is a TypeScript library for interacting with the cNGN AP
 To install cNGN TypeScript Library and its dependencies, run:
 
 ```bash
-npm install cngn-typescript-library
+pnpm install cngn-typescript-library
 ```
 
 ## Usage
