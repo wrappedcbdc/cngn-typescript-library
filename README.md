@@ -164,7 +164,7 @@ The `generateWalletAddress` method creates a new wallet address for any supporte
 const bscWallet = await WalletManager.generateWalletAddress(Network.bsc);    // BSC address
 const ethWallet = await WalletManager.generateWalletAddress(Network.eth);    // Ethereum address
 const maticWallet = await WalletManager.generateWalletAddress(Network.matic); // Polygon address
-const atcWallet = await WalletManager.generateWalletAddress(Network.atc);    // Atlantic Chain address
+const atcWallet = await WalletManager.generateWalletAddress(Network.atc);    // Asset Chain address
 
 // Bantu/Stellar-based Chain (returns G-prefixed addresses)
 const xbnWallet = await WalletManager.generateWalletAddress(Network.xbn);    // XBN address
