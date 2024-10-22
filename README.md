@@ -55,7 +55,7 @@ The library supports multiple blockchain networks, grouped by their underlying c
 
 ### EVM (Ethereum Virtual Machine) Chains
 - `Network.bsc` - Binance Smart Chain Mainnet
-- `Network.atc` - Atlantic Chain
+- `Network.atc` - Asset Chain
 - `Network.eth` - Ethereum Mainnet
 - `Network.matic` - Polygon (Previously Matic)
 
