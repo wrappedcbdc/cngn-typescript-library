@@ -37,7 +37,7 @@ import {
     Secrets,
     Swap,
     RedeemAsset,
-    Mint,
+    CreateVirtualAccount,
     UpdateBusiness,
     Network
 } from 'cngn-typescript-library';
