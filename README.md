@@ -155,44 +155,6 @@ interface GeneratedWalletAddress {
 
 ## Testing
 
-The library uses Jest for testing. Tests are organized into two main categories:
-
-### cNGNManager Tests
-
-Tests for the cNGNManager class cover:
-
-1. **Constructor**
-    - Proper axios instance creation with correct configuration
-
-2. **API Calls**
-    - Balance retrieval
-    - Transaction history fetching
-    - Chain swapping operations
-    - Virtual account creation
-    - Business detail updates
-    - Bank information retrieval
-    - Asset redemption
-
-3. **Error Handling**
-    - API errors (400, 500, etc.)
-    - Network errors
-    - Request setup errors
-
-### WalletManager Tests
-
-Tests for the WalletManager class cover:
-
-1. **Wallet Generation**
-    - Generation for all supported networks (BSC, ETH, etc.)
-    - Proper address format verification
-    - Mnemonic and private key generation
-
-2. **Error Handling**
-    - Wallet generation failures
-    - Invalid network parameters
-
-### Running Tests
-
 To run the tests:
 
 1. Install dependencies:
@@ -241,7 +203,7 @@ The library includes TypeScript definitions for all parameters and return types:
 - `Transactions` - Transaction details
 - `Swap` - Chain swap parameters
 - `RedeemAsset` - Asset redemption details
-- `Mint` - Virtual account creation parameters
+- `CreateVirtualAccount` - Virtual account creation parameters
 - `UpdateBusiness` - Business update parameters
 - `GeneratedWalletAddress` - Wallet generation response
 
