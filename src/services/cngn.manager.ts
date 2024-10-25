@@ -1,16 +1,17 @@
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {
     Balance,
-    DepositParams,
     ExternalAccounts,
     IResponse,
     IVirtualAccount,
     IWithdraw,
-    MintParams,
+    RedeemAsset,
+    CreateVirtualAccount,
     Secrets,
-    SwapParams,
+    Swap,
     Transactions,
-    WhiteListAddressParams
+    UpdateBusiness,
+    IBanks
 } from "../types";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
@@ -78,20 +79,24 @@ export class cNGNManager {
         return this.makeCalls('GET', '/transactions');
     }
 
-    public async swapBetweenChains(data: SwapParams): Promise<IResponse<IWithdraw>> {
+    public async swapBetweenChains(data: Swap): Promise<IResponse<IWithdraw>> {
         return this.makeCalls('POST', '/swap', data);
     }
 
-    public async depositForRedemption(data: DepositParams): Promise<IResponse<Transactions>> {
+    public async redeemAsset(data: RedeemAsset): Promise<IResponse<Transactions>> {
         return this.makeCalls('POST', '/deposit', data);
     }
 
-    public async createVirtualAccount(data: MintParams): Promise<IResponse<IVirtualAccount>> {
+    public async createVirtualAccount(data: CreateVirtualAccount): Promise<IResponse<IVirtualAccount>> {
         return this.makeCalls('POST', '/createVirtualAccount', data);
     }
 
-    public async whitelistAddress(data: WhiteListAddressParams): Promise<IResponse<ExternalAccounts>> {
+    public async updateBusiness(data: UpdateBusiness): Promise<IResponse<ExternalAccounts>> {
         return this.makeCalls('POST', '/whiteListAddress', data);
+    }
+
+    public async getBanks(): Promise<IResponse<IBanks>> {
+        return this.makeCalls('GET', '/banks');
     }
 
 }

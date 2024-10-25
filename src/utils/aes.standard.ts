@@ -1,14 +1,11 @@
 import * as crypto from 'crypto';
+import {AESEncryptionResponse} from "../types";
 
-export type AESEncryptionResponse = {
-    iv: string,
-    content: string
-}
+
 
 export class AESCrypto {
     private static readonly ALGORITHM = 'aes-256-cbc';
     private static readonly IV_LENGTH = 16;
-    private static readonly KEY_LENGTH = 32; // 256 bits
 
     private static prepareKey(key: string): Buffer {
         // Hash the key to ensure it's always the correct length

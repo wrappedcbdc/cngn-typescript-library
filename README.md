@@ -8,8 +8,8 @@ cngn-typescript-library is a TypeScript library for interacting with the cNGN AP
 - [Usage](#usage)
 - [Networks](#networks)
 - [Available Methods](#available-methods)
-   - [cNGNManager Methods](#cngnmanager-methods)
-   - [WalletManager Methods](#walletmanager-methods)
+    - [cNGNManager Methods](#cngnmanager-methods)
+    - [WalletManager Methods](#walletmanager-methods)
 - [Testing](#testing)
 - [Error Handling](#error-handling)
 - [Types](#types)
@@ -23,7 +23,7 @@ cngn-typescript-library is a TypeScript library for interacting with the cNGN AP
 To install cngn-typescript-library and its dependencies, run:
 
 ```bash
-pnpm install cngn-typescript-library
+npm install cngn-typescript-library
 ```
 
 ## Usage
@@ -31,7 +31,16 @@ pnpm install cngn-typescript-library
 First, import the necessary classes and types:
 
 ```typescript
-import { cNGNManager, WalletManager, Secrets, SwapParams, DepositParams, MintParams, WhiteListAddressParams, Network } from 'cngn-typescript-library';
+import {
+    cNGNManager,
+    WalletManager,
+    Secrets,
+    Swap,
+    RedeemAsset,
+    Mint,
+    UpdateBusiness,
+    Network
+} from 'cngn-typescript-library';
 ```
 
 Then, create an instance of `cNGNManager` with your secrets:
@@ -51,210 +60,211 @@ manager.getBalance().then(balance => console.log(balance));
 
 ## Networks
 
-The library supports multiple blockchain networks, grouped by their underlying chain technology:
+The library supports multiple blockchain networks:
 
-### EVM (Ethereum Virtual Machine) Chains
-- `Network.bsc` - Binance Smart Chain Mainnet
-- `Network.atc` - Atlantic Chain
-- `Network.eth` - Ethereum Mainnet
-- `Network.matic` - Polygon (Previously Matic)
-
-### Bantu (Stellar-based)
-- `Network.xbn` - XBN Chain
-
-### Tron
-- `Network.trx` - Tron Mainnet
-
-Usage example with different chain types:
-```typescript
-// For EVM chain operations (BSC, ATC, ETH, MATIC)
-const evmSwapParams: SwapParams = {
-    amount: 100,
-    address: '0x1234...',  // EVM-compatible address
-    network: Network.bsc   // or Network.atc, Network.eth, Network.matic
-};
-
-// For Bantu (XBN) operations
-const xbnSwapParams: SwapParams = {
-    amount: 100,
-    address: 'G....',      // Stellar-compatible address
-    network: Network.xbn
-};
-
-// For Tron operations
-const tronSwapParams: SwapParams = {
-    amount: 100,
-    address: 'T....',      // Tron address format
-    network: Network.trx
-};
-```
+- `Network.bsc` - Binance Smart Chain
+- `Network.atc` - Asset Chain
+- `Network.xbn` - Bantu Chain
+- `Network.eth` - Ethereum
+- `Network.matic` - Polygon (Matic)
+- `Network.trx` - Tron
+- `Network.base` - Base
 
 ## Available Methods
 
 ### cNGNManager Methods
 
 #### Get Balance
-
 ```typescript
 const balance = await manager.getBalance();
-console.log(balance);
 ```
 
 #### Get Transaction History
-
 ```typescript
 const transactions = await manager.getTransactionHistory();
-console.log(transactions);
 ```
 
 #### Swap Between Chains
-
 ```typescript
-const swapParams: SwapParams = {
-    amount: 100,
-    address: '0x1234...',
-    network: Network.bsc
+const swapData: Swap = {
+    amount: 1000,
+    address: '0x789...',
+    network: Network.bsc,
+    shouldSaveAddress: true
 };
-const swapResult = await manager.swapBetweenChains(swapParams);
-console.log(swapResult);
+const swapResult = await manager.swapBetweenChains(swapData);
 ```
 
-#### Deposit for Redemption
-
+#### Redeem Asset
 ```typescript
-const depositParams: DepositParams = {
+const redeemData: RedeemAsset = {
     amount: 1000,
-    bank: 'Example Bank',
-    accountNumber: '1234567890'
+    bankCode: '123',
+    accountNumber: '1234567890',
+    saveDetails: true
 };
-const depositResult = await manager.depositForRedemption(depositParams);
-console.log(depositResult);
+const redeemResult = await manager.redeemAsset(redeemData);
 ```
 
 #### Create Virtual Account
-
 ```typescript
-const mintParams: MintParams = {
-    provider: 'korapay'
+const mintData: CreateVirtualAccount = {
+    provider: 'korapay',
+    bank_code: '123'
 };
-const virtualAccount = await manager.createVirtualAccount(mintParams);
-console.log(virtualAccount);
+const virtualAccount = await manager.createVirtualAccount(mintData);
 ```
 
-#### Whitelist Address
-
+#### Update Business
 ```typescript
-const whitelistParams: WhiteListAddressParams = {
-    bscAddress: '0x1234...',
-    bankName: 'Example Bank',
-    bankAccountNumber: '1234567890'
+const updateData: UpdateBusiness = {
+    walletAddress: {
+        bscAddress: '0x123...',
+        // other chain addresses...
+    },
+    bankDetails: {
+        bankName: 'Test Bank',
+        bankAccountName: 'Test Account',
+        bankAccountNumber: '1234567890'
+    }
 };
-const whitelistResult = await manager.whitelistAddress(whitelistParams);
-console.log(whitelistResult);
+const updateResult = await manager.updateBusiness(updateData);
+```
+
+#### Get Banks
+```typescript
+const banks = await manager.getBanks();
 ```
 
 ### WalletManager Methods
 
 #### Generate Wallet Address
-
-The `generateWalletAddress` method creates a new wallet address for any supported network. Each network type returns addresses in its native format.
-
 ```typescript
-// EVM Chains (returns 0x-prefixed addresses)
-const bscWallet = await WalletManager.generateWalletAddress(Network.bsc);    // BSC address
-const ethWallet = await WalletManager.generateWalletAddress(Network.eth);    // Ethereum address
-const maticWallet = await WalletManager.generateWalletAddress(Network.matic); // Polygon address
-const atcWallet = await WalletManager.generateWalletAddress(Network.atc);    // Atlantic Chain address
-
-// Bantu/Stellar-based Chain (returns G-prefixed addresses)
-const xbnWallet = await WalletManager.generateWalletAddress(Network.xbn);    // XBN address
-
-// Tron Chain (returns T-prefixed addresses)
-const tronWallet = await WalletManager.generateWalletAddress(Network.trx);   // Tron address
+const wallet = await WalletManager.generateWalletAddress(Network.bsc);
 ```
 
-The response format for each generated wallet:
+Response format:
 ```typescript
-interface WalletResponse {
-    address: string;        // The public address for the wallet
-    network: Network;       // The network this wallet is for
-    mnemonic: string;      // 12-word recovery phrase
-    privateKey: string;    // Private key for the wallet
+interface GeneratedWalletAddress {
+    mnemonic: string | null;
+    address: string;
+    network: Network;
+    privateKey: string;
 }
 ```
-
-Example response:
-```typescript
-// EVM wallet response
-{
-    address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-    network: Network.eth,
-    mnemonic: "width craft decide...",
-    privateKey: "0x..."
-}
-
-// XBN wallet response
-{
-    address: "GBXYZABC...",
-    network: Network.xbn,
-    mnemonic: "width craft decide...",
-    privateKey: "S..."
-}
-
-// Tron wallet response
-{
-    address: "TRxYZABC...",
-    network: Network.trx,
-    mnemonic: "width craft decide...",
-    privateKey: "..."
-}
-```
-
-**Note:** Each network type has its own address format:
-- EVM chains (BSC, ETH, MATIC, ATC): `0x`-prefixed addresses
-- Bantu/XBN: `G`-prefixed addresses (Stellar format)
-- Tron: `T`-prefixed addresses
 
 ## Testing
 
-This project uses Jest for testing. To run the tests, follow these steps:
+The library uses Jest for testing. Tests are organized into two main categories:
 
-1. Run the test command:
+### cNGNManager Tests
 
-   ```bash
-   npm test
-   ```
+Tests for the cNGNManager class cover:
 
-   This will run all tests in the `__tests__` directory.
+1. **Constructor**
+    - Proper axios instance creation with correct configuration
 
-### Test Structure
+2. **API Calls**
+    - Balance retrieval
+    - Transaction history fetching
+    - Chain swapping operations
+    - Virtual account creation
+    - Business detail updates
+    - Bank information retrieval
+    - Asset redemption
 
-The tests are located in the `__tests__` directory. They cover various aspects of the cNGNManager and WalletManager classes, including:
+3. **Error Handling**
+    - API errors (400, 500, etc.)
+    - Network errors
+    - Request setup errors
 
-- API calls for different endpoints (GET and POST requests)
-- Encryption and decryption of data
-- Error handling for various scenarios
-- Wallet address generation for different networks
+### WalletManager Tests
+
+Tests for the WalletManager class cover:
+
+1. **Wallet Generation**
+    - Generation for all supported networks (BSC, ETH, etc.)
+    - Proper address format verification
+    - Mnemonic and private key generation
+
+2. **Error Handling**
+    - Wallet generation failures
+    - Invalid network parameters
+
+### Running Tests
+
+To run the tests:
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Run tests:
+```bash
+npm test
+```
+
+3. Run tests with coverage:
+```bash
+npm test --coverage
+```
+
+Test files follow the naming convention: `*.test.ts` and are located in the `__tests__` directory.
 
 ## Error Handling
 
-The library uses a custom error handling mechanism. All API errors are caught and thrown as `Error` objects with descriptive messages.
+The library implements comprehensive error handling:
+
+```typescript
+try {
+    const result = await manager.getBalance();
+} catch (error) {
+    // Error will contain detailed message about the failure
+    console.error(error.message);
+}
+```
+
+Common error types:
+- API errors (with status codes)
+- Network connectivity issues
+- Invalid parameters
+- Wallet generation errors
 
 ## Types
 
-The library includes TypeScript definitions for all parameters and return types. All types are defined in a single `types.ts` file for easy reference and maintenance.
+The library includes TypeScript definitions for all parameters and return types:
+
+- `Secrets` - API credentials and keys
+- `IResponse<T>` - Standard API response wrapper
+- `Balance` - Account balance information
+- `Transactions` - Transaction details
+- `Swap` - Chain swap parameters
+- `RedeemAsset` - Asset redemption details
+- `Mint` - Virtual account creation parameters
+- `UpdateBusiness` - Business update parameters
+- `GeneratedWalletAddress` - Wallet generation response
 
 ## Security
 
-This library uses AES encryption for request payloads and Ed25519 decryption for response data. Ensure that your `encryptionKey` and `privateKey` are kept secure.
+- Uses AES encryption for request data
+- Implements Ed25519 decryption for responses
+- Requires secure storage of API credentials
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome. Feel free to check [issues page](https://github.com/wrappedcbdc/cngn-typescript-library/issues) if you want to contribute.
+To contribute:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Create a Pull Request
 
 ## Support
 
-If you have any questions or need help using the library, please open an issue in the GitHub repository.
+For support, please:
+- Open an issue in the GitHub repository
+- Check existing documentation
+- Contact the support team
 
 ## License
 

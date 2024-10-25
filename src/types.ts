@@ -9,6 +9,11 @@ export type IResponse<T> =  {
     error?: string;
 }
 
+export type AESEncryptionResponse = {
+    iv: string,
+    content: string
+}
+
 export type Balance = {
     asset_type: string;
     asset_code: any;
@@ -33,7 +38,8 @@ export enum Network {
     xbn = 'xbn',
     eth = 'eth',
     matic = 'matic',
-    trx = 'trx'
+    trx = 'trx',
+    base = 'base'
 }
 
 export enum AssetType {
@@ -50,21 +56,21 @@ export enum Status {
     completed = 'completed'
 }
 
-export interface SwapParams {
+export interface Swap {
     shouldSaveAddress?: boolean;
     amount: number;
     address: string;
     network: Network;
 }
 
-export interface DepositParams {
+export interface RedeemAsset {
     amount: number;
-    bank: string;
+    bankCode: string;
     accountNumber: string;
     saveDetails?: boolean;
 }
 
-export interface MintParams {
+export interface CreateVirtualAccount {
     provider: ProviderType;
     bank_code?: string
 }
@@ -75,13 +81,11 @@ export interface IVirtualAccount {
 }
 
 export interface ExternalAccounts {
-    id: string;
-    businessId: string;
-    bantu_user_id?: string | null;
     xbn_address?: string | null;
     atc_address?: string | null;
     bsc_address?: string | null;
     eth_address?: string | null;
+    base_address?: string | null;
     polygon_address?: string | null;
     tron_address?: string | null;
     bank_account_name?: string | null;
@@ -89,17 +93,30 @@ export interface ExternalAccounts {
     bank_account_number?: string | null;
 }
 
-export interface WhiteListAddressParams {
-    bantuUserId?: string;
-    xbnAddress?: string;
-    ethAddress?: string;
-    bscAddress?: string;
-    atcAddress?: string;
-    polygonAddress?: string;
-    tronAddress?: string;
-    bankName?: string;
-    bankAccountName?: string;
-    bankAccountNumber?: string;
+export interface IBanks {
+    "name": string,
+    "slug": string,
+    "code": string,
+    "country": string,
+    "nibss_bank_code": string
+}
+
+export interface UpdateBusiness {
+    walletAddress: {
+        bantuUserId?: string | null;
+        xbnAddress?: string | null;
+        bscAddress?: string | null;
+        atcAddress?: string | null;
+        polygonAddress?: string | null;
+        ethAddress?: string | null;
+        tronAddress?: string | null;
+        baseAddress?: string | null;
+    } | null | undefined,
+    bankDetails: {
+        bankName?: string | null;
+        bankAccountName?: string | null;
+        bankAccountNumber?: string | null;
+    } | null | undefined
 }
 
 export interface IWithdraw {
@@ -108,7 +125,6 @@ export interface IWithdraw {
 }
 
 export interface Transactions {
-    id: string;
     from: string;
     receiver: string;
     initiatorId: string;
@@ -127,7 +143,6 @@ export interface Transactions {
     va_deposit_session_id?: string | null;
     va_payment_ref?: string | null;
     mpc_trx_ref?: string | null;
-    businessId?: string | null;
 }
 
 export interface GeneratedWalletAddress {
