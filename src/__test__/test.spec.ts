@@ -10,13 +10,12 @@ import {
     IVirtualAccount,
     CreateVirtualAccount,
     ExternalAccounts,
-    UpdateBusiness,
     IBanks,
     Network,
     TrxType,
     AssetType,
     Status,
-    ProviderType
+    ProviderType, UpdateExternalAccount
 } from '../types';
 import {cNGNManager} from "../services/cngn.manager";
 
@@ -175,15 +174,9 @@ describe('cNGNManager', () => {
 
         describe('updateBusiness', () => {
             it('should update business details successfully', async () => {
-                const updateData: UpdateBusiness = {
+                const updateData: UpdateExternalAccount = {
                     walletAddress: {
                         bscAddress: '0x123...',
-                        xbnAddress: null,
-                        atcAddress: null,
-                        polygonAddress: null,
-                        ethAddress: null,
-                        tronAddress: null,
-                        baseAddress: null
                     },
                     bankDetails: {
                         bankName: 'Test Bank',
@@ -208,7 +201,7 @@ describe('cNGNManager', () => {
                     data: mockResponse
                 });
 
-                const result = await manager.updateBusiness(updateData);
+                const result = await manager.updateExternalAccounts(updateData);
                 expect(result).toEqual(mockResponse);
             });
         });

@@ -101,22 +101,22 @@ export interface IBanks {
     "nibss_bank_code": string
 }
 
-export interface UpdateBusiness {
-    walletAddress: {
-        bantuUserId?: string | null;
-        xbnAddress?: string | null;
-        bscAddress?: string | null;
-        atcAddress?: string | null;
-        polygonAddress?: string | null;
-        ethAddress?: string | null;
-        tronAddress?: string | null;
-        baseAddress?: string | null;
-    } | null | undefined,
-    bankDetails: {
-        bankName?: string | null;
-        bankAccountName?: string | null;
-        bankAccountNumber?: string | null;
-    } | null | undefined
+export interface UpdateExternalAccount {
+    walletAddress?: {
+        bantuUserId?: string;
+        xbnAddress?: string;
+        bscAddress?: string;
+        atcAddress?: string;
+        polygonAddress?: string;
+        ethAddress?: string;
+        tronAddress?: string;
+        baseAddress?: string;
+    },
+    bankDetails?: {
+        bankName?: string;
+        bankAccountName?: string;
+        bankAccountNumber?: string;
+    }
 }
 
 export interface IWithdraw {

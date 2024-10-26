@@ -10,8 +10,8 @@ import {
     Secrets,
     Swap,
     Transactions,
-    UpdateBusiness,
-    IBanks
+    IBanks,
+    UpdateExternalAccount
 } from "../types";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
@@ -84,15 +84,15 @@ export class cNGNManager {
     }
 
     public async redeemAsset(data: RedeemAsset): Promise<IResponse<Transactions>> {
-        return this.makeCalls('POST', '/deposit', data);
+        return this.makeCalls('POST', '/redeemAsset', data);
     }
 
     public async createVirtualAccount(data: CreateVirtualAccount): Promise<IResponse<IVirtualAccount>> {
         return this.makeCalls('POST', '/createVirtualAccount', data);
     }
 
-    public async updateBusiness(data: UpdateBusiness): Promise<IResponse<ExternalAccounts>> {
-        return this.makeCalls('POST', '/whiteListAddress', data);
+    public async updateExternalAccounts(data: UpdateExternalAccount): Promise<IResponse<ExternalAccounts>> {
+        return this.makeCalls('POST', '/updateBusiness', data);
     }
 
     public async getBanks(): Promise<IResponse<IBanks>> {
