@@ -15,7 +15,8 @@ import {
     TrxType,
     AssetType,
     Status,
-    ProviderType, UpdateExternalAccount
+    ProviderType,
+    UpdateExternalAccount
 } from '../types';
 import {cNGNManager} from "../services/cngn.manager";
 

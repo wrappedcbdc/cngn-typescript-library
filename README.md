@@ -38,7 +38,7 @@ import {
     Swap,
     RedeemAsset,
     CreateVirtualAccount,
-    UpdateBusiness,
+    UpdateExternalAccount,
     Network
 } from 'cngn-typescript-library';
 ```
@@ -117,7 +117,7 @@ const virtualAccount = await manager.createVirtualAccount(mintData);
 
 #### Update Business
 ```typescript
-const updateData: UpdateBusiness = {
+const updateData: UpdateExternalAccount = {
     walletAddress: {
         bscAddress: '0x123...',
         // other chain addresses...
@@ -128,7 +128,7 @@ const updateData: UpdateBusiness = {
         bankAccountNumber: '1234567890'
     }
 };
-const updateResult = await manager.updateBusiness(updateData);
+const updateResult = await manager.updateExternalAccounts(updateData);
 ```
 
 #### Get Banks
@@ -204,7 +204,7 @@ The library includes TypeScript definitions for all parameters and return types:
 - `Swap` - Chain swap parameters
 - `RedeemAsset` - Asset redemption details
 - `CreateVirtualAccount` - Virtual account creation parameters
-- `UpdateBusiness` - Business update parameters
+- `UpdateExternalAccount` - Business update parameters and wallet addresses
 - `GeneratedWalletAddress` - Wallet generation response
 
 ## Security
