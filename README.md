@@ -109,8 +109,8 @@ const redeemResult = await manager.redeemAsset(redeemData);
 #### Create Virtual Account
 ```typescript
 const mintData: CreateVirtualAccount = {
-    provider: 'korapay',
-    bank_code: '123'
+    provider: 'korapay', // default provider
+    bank_code: '011'
 };
 const virtualAccount = await manager.createVirtualAccount(mintData);
 ```
