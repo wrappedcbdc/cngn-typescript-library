@@ -1,6 +1,6 @@
 # cngn-typescript-library
 
-cngn-typescript-library is a TypeScript library for interacting with the cNGN API. It provides a simple interface for various operations such as checking balance, swapping between chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
+cngn-typescript-library is a TypeScript library for interacting with the cNGN API. It provides a simple interface for various operations such as checking balance, withdraw from chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
 
 ## Table of Contents
 
@@ -35,7 +35,7 @@ import {
     cNGNManager,
     WalletManager,
     Secrets,
-    Swap,
+    IWithdraw,
     RedeemAsset,
     CreateVirtualAccount,
     UpdateExternalAccount,
@@ -84,15 +84,15 @@ const balance = await manager.getBalance();
 const transactions = await manager.getTransactionHistory();
 ```
 
-#### Swap Between Chains
+#### Withdraw from chains
 ```typescript
-const swapData: Swap = {
+const withdrawData: IWithdraw = {
     amount: 1000,
     address: '0x789...',
     network: Network.bsc,
     shouldSaveAddress: true
 };
-const swapResult = await manager.swapBetweenChains(swapData);
+const withdrawResult = await manager.withdraw(withdrawData);
 ```
 
 #### Redeem Asset
@@ -146,7 +146,7 @@ const wallet = await WalletManager.generateWalletAddress(Network.bsc);
 Response format:
 ```typescript
 interface GeneratedWalletAddress {
-    mnemonic: string | null;
+    mnemonic: string;
     address: string;
     network: Network;
     privateKey: string;
@@ -201,7 +201,7 @@ The library includes TypeScript definitions for all parameters and return types:
 - `IResponse<T>` - Standard API response wrapper
 - `Balance` - Account balance information
 - `Transactions` - Transaction details
-- `Swap` - Chain swap parameters
+- `Withdraw` - Withdraw parameters
 - `RedeemAsset` - Asset redemption details
 - `CreateVirtualAccount` - Virtual account creation parameters
 - `UpdateExternalAccount` - Business update parameters and wallet addresses

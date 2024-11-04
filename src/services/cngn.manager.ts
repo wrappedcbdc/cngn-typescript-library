@@ -8,7 +8,7 @@ import {
     RedeemAsset,
     CreateVirtualAccount,
     Secrets,
-    Swap,
+    IWithdrawResponse,
     Transactions,
     IBanks,
     UpdateExternalAccount
@@ -79,8 +79,8 @@ export class cNGNManager {
         return this.makeCalls('GET', '/transactions');
     }
 
-    public async swapBetweenChains(data: Swap): Promise<IResponse<IWithdraw>> {
-        return this.makeCalls('POST', '/swap', data);
+    public async withdraw(data: IWithdraw): Promise<IResponse<IWithdrawResponse>> {
+        return this.makeCalls('POST', '/withdraw', data);
     }
 
     public async redeemAsset(data: RedeemAsset): Promise<IResponse<Transactions>> {

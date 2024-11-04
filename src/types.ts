@@ -56,7 +56,7 @@ export enum Status {
     completed = 'completed'
 }
 
-export interface Swap {
+export interface IWithdraw {
     shouldSaveAddress?: boolean;
     amount: number;
     address: string;
@@ -119,7 +119,7 @@ export interface UpdateExternalAccount {
     }
 }
 
-export interface IWithdraw {
+export interface IWithdrawResponse {
     trxRef: string;
     address: string;
 }

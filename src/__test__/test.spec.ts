@@ -5,7 +5,6 @@ import {
     Balance,
     Transactions,
     IWithdraw,
-    Swap,
     RedeemAsset,
     IVirtualAccount,
     CreateVirtualAccount,
@@ -16,7 +15,7 @@ import {
     AssetType,
     Status,
     ProviderType,
-    UpdateExternalAccount
+    UpdateExternalAccount, IWithdrawResponse
 } from '../types';
 import {cNGNManager} from "../services/cngn.manager";
 
@@ -121,19 +120,19 @@ describe('cNGNManager', () => {
 
         describe('swapBetweenChains', () => {
             it('should process swap successfully', async () => {
-                const swapData: Swap = {
+                const withdrawData: IWithdraw = {
                     amount: 1000,
                     address: '0x789...',
                     network: Network.bsc,
                     shouldSaveAddress: true
                 };
 
-                const mockWithdraw: IWithdraw = {
+                const mockWithdraw: IWithdrawResponse = {
                     trxRef: 'TRX123',
                     address: '0x789...'
                 };
 
-                const mockResponse: IResponse<IWithdraw> = {
+                const mockResponse: IResponse<IWithdrawResponse> = {
                     success: true,
                     data: mockWithdraw
                 };
@@ -142,7 +141,7 @@ describe('cNGNManager', () => {
                     data: mockResponse
                 });
 
-                const result = await manager.swapBetweenChains(swapData);
+                const result = await manager.withdraw(withdrawData);
                 expect(result).toEqual(mockResponse);
             });
         });
