@@ -1,6 +1,6 @@
 # cngn-typescript-library
 
-cngn-typescript-library is a TypeScript library for interacting with the cNGN API. It provides a simple interface for various operations such as checking balance, withdraw from chains, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
+cngn-typescript-library is a TypeScript library for interacting with the cNGN API. It provides a simple interface for various operations such as checking balance, withdraw, depositing for redemption, creating virtual accounts, generating wallet addresses, and more.
 
 ## Table of Contents
 
@@ -8,8 +8,8 @@ cngn-typescript-library is a TypeScript library for interacting with the cNGN AP
 - [Usage](#usage)
 - [Networks](#networks)
 - [Available Methods](#available-methods)
-    - [cNGNManager Methods](#cngnmanager-methods)
-    - [WalletManager Methods](#walletmanager-methods)
+  - [cNGNManager Methods](#cngnmanager-methods)
+  - [WalletManager Methods](#walletmanager-methods)
 - [Testing](#testing)
 - [Error Handling](#error-handling)
 - [Types](#types)
@@ -32,14 +32,15 @@ First, import the necessary classes and types:
 
 ```typescript
 import {
-    cNGNManager,
-    WalletManager,
-    Secrets,
-    IWithdraw,
-    RedeemAsset,
-    CreateVirtualAccount,
-    UpdateExternalAccount,
-    Network
+  cNGNManager,
+  WalletManager,
+  Secrets,
+  IWithdraw,
+  RedeemAsset,
+  CreateVirtualAccount,
+  UpdateExternalAccount,
+  Network,
+  Swap
 } from 'cngn-typescript-library';
 ```
 
@@ -81,10 +82,12 @@ const balance = await manager.getBalance();
 
 #### Get Transaction History
 ```typescript
-const transactions = await manager.getTransactionHistory();
+const page = 1;
+const limit = 10;
+const transactions = await manager.getTransactionHistory(page, limit);
 ```
 
-#### Withdraw from chains
+#### Withdraw
 ```typescript
 const withdrawData: IWithdraw = {
     amount: 1000,
@@ -113,6 +116,17 @@ const mintData: CreateVirtualAccount = {
     bank_code: '011'
 };
 const virtualAccount = await manager.createVirtualAccount(mintData);
+```
+
+#### Swap Asset
+```typescript
+const swapData: Swap = {
+    destinationNetwork: Network.bsc,
+    destinationAddress: '0x123...',
+    originNetwork: Network.eth,
+    callbackUrl: 'https://your-callback-url.com' // optional
+};
+const swapResult = await manager.swapAsset(swapData);
 ```
 
 #### Update Business
@@ -206,6 +220,7 @@ The library includes TypeScript definitions for all parameters and return types:
 - `CreateVirtualAccount` - Virtual account creation parameters
 - `UpdateExternalAccount` - Business update parameters and wallet addresses
 - `GeneratedWalletAddress` - Wallet generation response
+- `Swap` - Asset swap parameters
 
 ## Security
 

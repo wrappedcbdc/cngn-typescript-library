@@ -11,7 +11,10 @@ import {
     IWithdrawResponse,
     Transactions,
     IBanks,
-    UpdateExternalAccount
+    UpdateExternalAccount,
+    Swap,
+    SwapResponse,
+    ITransactionPagination
 } from "../types";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
@@ -24,7 +27,7 @@ export class cNGNManager {
 
     constructor(private readonly secrets: Secrets ) {
         this.axiosInstance = axios.create({
-            baseURL: `https://staging.api.wrapcbdc.com/${API_CURRENT_VERSION}/api`,
+            baseURL: `https://api.cngn.co/${API_CURRENT_VERSION}/api`,
             headers: {
                 'Authorization': `Bearer ${this.secrets.apiKey}`,
                 'Content-Type': 'application/json'
@@ -75,8 +78,8 @@ export class cNGNManager {
         return this.makeCalls('GET', '/balance');
     }
 
-    public async getTransactionHistory(): Promise<IResponse<Transactions[]>> {
-        return this.makeCalls('GET', '/transactions');
+    public async getTransactionHistory(page: number = 1, limit: number = 10): Promise<IResponse<ITransactionPagination>> {
+        return this.makeCalls('GET', `/transactions?page=${page}&limit=${limit}`);
     }
 
     public async withdraw(data: IWithdraw): Promise<IResponse<IWithdrawResponse>> {
@@ -95,8 +98,12 @@ export class cNGNManager {
         return this.makeCalls('POST', '/updateBusiness', data);
     }
 
-    public async getBanks(): Promise<IResponse<IBanks>> {
+    public async getBanks(): Promise<IResponse<IBanks[]>> {
         return this.makeCalls('GET', '/banks');
+    }
+
+    public async swapAsset(data: Swap): Promise<IResponse<SwapResponse>> {
+        return this.makeCalls('POST', '/swap', data);
     }
 
 }

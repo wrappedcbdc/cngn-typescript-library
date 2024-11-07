@@ -15,7 +15,11 @@ import {
     AssetType,
     Status,
     ProviderType,
-    UpdateExternalAccount, IWithdrawResponse
+    UpdateExternalAccount,
+    IWithdrawResponse,
+    Swap,
+    SwapResponse,
+    ITransactionPagination
 } from '../types';
 import {cNGNManager} from "../services/cngn.manager";
 
@@ -44,7 +48,7 @@ describe('cNGNManager', () => {
     describe('Constructor', () => {
         it('should create axios instance with correct configuration', () => {
             expect(mockedAxios.create).toHaveBeenCalledWith({
-                baseURL: 'https://staging.api.wrapcbdc.com/v1/api',
+                baseURL: 'https://api.cngn.co/v1/api',
                 headers: {
                     'Authorization': 'Bearer test-api-key',
                     'Content-Type': 'application/json'
@@ -83,28 +87,39 @@ describe('cNGNManager', () => {
 
         describe('getTransactionHistory', () => {
             it('should fetch transaction history successfully', async () => {
-                const mockTransactions: Transactions[] = [{
-                    from: '0x123...',
-                    receiver: '0x456...',
-                    initiatorId: 'init123',
-                    requires_multi_sig: false,
-                    total_sigs_required: 1,
-                    amount: '1000',
-                    description: 'Test transaction',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    trx_ref: 'TRX123',
-                    trx_type: TrxType.fiat_buy,
-                    network: Network.bsc,
-                    asset_type: AssetType.fiat,
-                    asset_symbol: 'cNGN',
-                    status: Status.completed,
-                    va_deposit_session_id: null,
-                    va_payment_ref: null,
-                    mpc_trx_ref: null
-                }];
+                const mockTransactions: ITransactionPagination = {
+                    data: [
+                        {
+                            from: '0x123...',
+                            receiver: '0x456...',
+                            initiatorId: 'init123',
+                            requires_multi_sig: false,
+                            total_sigs_required: 1,
+                            amount: '1000',
+                            description: 'Test transaction',
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                            trx_ref: 'TRX123',
+                            trx_type: TrxType.fiat_buy,
+                            network: Network.bsc,
+                            asset_type: AssetType.fiat,
+                            asset_symbol: 'cNGN',
+                            status: Status.completed,
+                            va_deposit_session_id: null,
+                            va_payment_ref: null,
+                            mpc_trx_ref: null
+                        }
+                    ],
+                    pagination: {
+                        count: 1,
+                        pages: 1,
+                        isLastPage: true,
+                        nextPage: null,
+                        previousPage: null
+                    }
+                };
 
-                const mockResponse: IResponse<Transactions[]> = {
+                const mockResponse: IResponse<ITransactionPagination> = {
                     success: true,
                     data: mockTransactions
                 };
@@ -118,7 +133,7 @@ describe('cNGNManager', () => {
             });
         });
 
-        describe('swapBetweenChains', () => {
+        describe('withdraw', () => {
             it('should process swap successfully', async () => {
                 const withdrawData: IWithdraw = {
                     amount: 1000,
@@ -208,15 +223,17 @@ describe('cNGNManager', () => {
 
         describe('getBanks', () => {
             it('should fetch banks successfully', async () => {
-                const mockBanks: IBanks = {
-                    name: 'Test Bank',
-                    slug: 'test-bank',
-                    code: '123',
-                    country: 'NG',
-                    nibss_bank_code: '123456'
-                };
+                const mockBanks: IBanks[] = [
+                    {
+                        name: 'Test Bank',
+                        slug: 'test-bank',
+                        code: '123',
+                        country: 'NG',
+                        nibss_bank_code: '123456'
+                    },
+                ]
 
-                const mockResponse: IResponse<IBanks> = {
+                const mockResponse: IResponse<IBanks[]> = {
                     success: true,
                     data: mockBanks
                 };
@@ -269,6 +286,35 @@ describe('cNGNManager', () => {
                 });
 
                 const result = await manager.redeemAsset(redeemData);
+                expect(result).toEqual(mockResponse);
+            });
+        });
+
+        describe('swapAsset', () => {
+            it('should process swap successfully', async () => {
+                const swapData: Swap = {
+                    destinationNetwork: Network.bsc,
+                    destinationAddress: '0x789...',
+                    originNetwork: Network.bsc,
+                    callbackUrl: 'https://test-callback.com'
+                };
+
+                const mockSwapResponse: SwapResponse = {
+                    receivableAddress: '0x789...',
+                    transactionId: 'TRX123',
+                    reference: 'REF123'
+                };
+
+                const mockResponse: IResponse<SwapResponse> = {
+                    success: true,
+                    data: mockSwapResponse
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.swapAsset(swapData);
                 expect(result).toEqual(mockResponse);
             });
         });

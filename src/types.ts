@@ -124,6 +124,18 @@ export interface IWithdrawResponse {
     address: string;
 }
 
+export interface IPagination {
+    count: number,
+    pages: number,
+    isLastPage: boolean,
+    nextPage: number | null,
+    previousPage: number | null,
+}
+
+export interface ITransactionPagination {
+    data: Transactions[]
+    pagination: IPagination
+}
 export interface Transactions {
     from: string;
     receiver: string;
@@ -150,4 +162,17 @@ export interface GeneratedWalletAddress {
     address: string;
     network: Network;
     privateKey: string;
+}
+
+export interface Swap {
+    destinationNetwork: Network;
+    destinationAddress: string;
+    originNetwork: Network;
+    callbackUrl?: string;
+}
+
+export interface SwapResponse {
+    receivableAddress: string;
+    transactionId: string;
+    reference: string;
 }
