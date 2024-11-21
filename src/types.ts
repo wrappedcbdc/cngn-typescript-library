@@ -136,25 +136,29 @@ export interface ITransactionPagination {
     data: Transactions[]
     pagination: IPagination
 }
+
 export interface Transactions {
+    id: string;
     from: string;
-    receiver: string;
-    initiatorId: string;
-    requires_multi_sig: boolean;
-    total_sigs_required: number;
-    amount: any;
+    receiver: Receiver;
+    amount: string;
     description: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
     trx_ref: string;
-    trx_type: TrxType;
-    network: Network;
-    asset_type: AssetType;
-    asset_symbol?: string | null;
-    status: Status;
-    va_deposit_session_id?: string | null;
-    va_payment_ref?: string | null;
-    mpc_trx_ref?: string | null;
+    trx_type: string;
+    network: string;
+    asset_type: string;
+    asset_symbol: string;
+    base_trx_hash: string;
+    extl_trx_hash: string;
+    explorer_link: string;
+    status: string;
+}
+
+interface Receiver {
+    address?: string;
+    bank?: string;
+    accountNumber?: string;
 }
 
 export interface GeneratedWalletAddress {
