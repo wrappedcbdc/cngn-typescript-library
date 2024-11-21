@@ -2,7 +2,7 @@ import { secp256k1 } from '@noble/curves/secp256k1';
 import keccak256 from 'keccak256';
 import * as bip39 from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
-import { Network, GeneratedWalletAddress } from "../types";
+import { Network, GeneratedWalletAddress } from "./types";
 import { TronWeb } from 'tronweb';
 import nacl from 'tweetnacl';
 import WAValidator from 'multicoin-address-validator';

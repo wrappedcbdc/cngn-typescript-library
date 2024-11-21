@@ -1,4 +1,4 @@
-import {GeneratedWalletAddress, IResponse, Network} from "../types";
+import {GeneratedWalletAddress, IResponse, Network} from "../utils/types";
 import {CryptoWallet} from "../utils/crypto.wallet";
 
 export class WalletManager {

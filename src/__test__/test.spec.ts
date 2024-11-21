@@ -20,7 +20,7 @@ import {
     Swap,
     SwapResponse,
     ITransactionPagination
-} from '../types';
+} from '../utils/types';
 import {cNGNManager} from "../services/cngn.manager";
 
 // Mock axios

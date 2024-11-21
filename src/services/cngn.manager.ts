@@ -15,7 +15,7 @@ import {
     Swap,
     SwapResponse,
     ITransactionPagination
-} from "../types";
+} from "../utils/types";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
 

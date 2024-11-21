@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import {AESEncryptionResponse} from "../types";
+import {AESEncryptionResponse} from "./types";
 
 
 
