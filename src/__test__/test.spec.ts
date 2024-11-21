@@ -90,24 +90,23 @@ describe('cNGNManager', () => {
                 const mockTransactions: ITransactionPagination = {
                     data: [
                         {
-                            from: '0x123...',
-                            receiver: '0x456...',
-                            initiatorId: 'init123',
-                            requires_multi_sig: false,
-                            total_sigs_required: 1,
-                            amount: '1000',
-                            description: 'Test transaction',
-                            createdAt: new Date(),
-                            updatedAt: new Date(),
-                            trx_ref: 'TRX123',
-                            trx_type: TrxType.fiat_buy,
-                            network: Network.bsc,
+                            id: "txn_123456789",
+                            from: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                            receiver: {
+                                address: "0x123f3a3c58292d1c3eb40808c6412e5a1231234"
+                            },
+                            amount: "0.5",
+                            description: "Transfer ETH to wallet",
+                            createdAt: "2024-03-21T14:30:00Z",
+                            trx_ref: "ETH_TXN_001",
+                            trx_type: TrxType.withdraw,
+                            network: Network.eth,
                             asset_type: AssetType.fiat,
-                            asset_symbol: 'cNGN',
-                            status: Status.completed,
-                            va_deposit_session_id: null,
-                            va_payment_ref: null,
-                            mpc_trx_ref: null
+                            asset_symbol: "ETH",
+                            base_trx_hash: "0xabcd1234...",
+                            extl_trx_hash: "0xefgh5678...",
+                            explorer_link: "https://etherscan.io/tx/0xabcd1234...",
+                            status: Status.completed
                         }
                     ],
                     pagination: {
@@ -257,23 +256,23 @@ describe('cNGNManager', () => {
                 };
 
                 const mockTransaction: Transactions = {
-                    from: '0x123...',
-                    receiver: '1234567890',
-                    initiatorId: 'init123',
-                    requires_multi_sig: false,
-                    total_sigs_required: 1,
-                    amount: '1000',
-                    description: 'Asset redemption',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    trx_ref: 'TRX123',
+                    id: "txn_123456789",
+                    from: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                    receiver: {
+                        address: "0x123f3a3c58292d1c3eb40808c6412e5a1231234"
+                    },
+                    amount: "0.5",
+                    description: "Transfer ETH to wallet",
+                    createdAt: "2024-03-21T14:30:00Z",
+                    trx_ref: "ETH_TXN_001",
                     trx_type: TrxType.fiat_redeem,
-                    network: Network.bsc,
+                    network: Network.eth,
                     asset_type: AssetType.fiat,
-                    status: Status.pending,
-                    va_deposit_session_id: null,
-                    va_payment_ref: null,
-                    mpc_trx_ref: null
+                    asset_symbol: "ETH",
+                    base_trx_hash: "0xabcd1234...",
+                    extl_trx_hash: "0xefgh5678...",
+                    explorer_link: "https://etherscan.io/tx/0xabcd1234...",
+                    status: Status.completed
                 };
 
                 const mockResponse: IResponse<Transactions> = {
