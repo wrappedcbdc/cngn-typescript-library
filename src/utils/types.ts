@@ -102,22 +102,25 @@ export interface IBanks {
 }
 
 export interface UpdateExternalAccount {
-    walletAddress?: {
-        bantuUserId?: string;
-        xbnAddress?: string;
-        bscAddress?: string;
-        atcAddress?: string;
-        polygonAddress?: string;
-        ethAddress?: string;
-        tronAddress?: string;
-        baseAddress?: string;
-    },
+    walletAddress?: (
+        | { bantuUserId: string; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
+        | { xbnAddress: string; bantuUserId?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
+        | { bscAddress: string; bantuUserId?: never; xbnAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
+        | { atcAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
+        | { polygonAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
+        | { ethAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; tronAddress?: never; baseAddress?: never; }
+        | { tronAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; baseAddress?: never; }
+        | { baseAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; }
+        );
+
     bankDetails?: {
         bankName?: string;
         bankAccountName?: string;
         bankAccountNumber?: string;
-    }
+    };
 }
+
+
 
 export interface IWithdrawResponse {
     trxRef: string;

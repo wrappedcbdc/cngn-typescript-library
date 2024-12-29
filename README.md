@@ -133,8 +133,7 @@ const swapResult = await manager.swapAsset(swapData);
 ```typescript
 const updateData: UpdateExternalAccount = {
     walletAddress: {
-        bscAddress: '0x123...',
-        // other chain addresses...
+        bscAddress: '0x123...', //Note: Only one address can be updated at a time
     },
     bankDetails: {
         bankName: 'Test Bank',
