@@ -86,6 +86,10 @@ export class cNGNManager {
         return this.makeCalls('POST', '/withdraw', data);
     }
 
+    public async verifyWithdrawal(tnxRef: string): Promise<IResponse<Transactions>> {
+        return this.makeCalls('GET', `/withdraw/verify/${tnxRef}`);
+    }
+
     public async redeemAsset(data: RedeemAsset): Promise<IResponse<Transactions>> {
         return this.makeCalls('POST', '/redeemAsset', data);
     }

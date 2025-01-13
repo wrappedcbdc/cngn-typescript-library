@@ -98,6 +98,12 @@ const withdrawData: IWithdraw = {
 const withdrawResult = await manager.withdraw(withdrawData);
 ```
 
+#### Verify Withdrawal Reference
+```typescript
+const tnxRef: string = '123-456-789-789405';
+const withdrawResult = await manager.verifyWithdrawal(tnxRef);
+```
+
 #### Redeem Asset
 ```typescript
 const redeemData: RedeemAsset = {

@@ -160,6 +160,42 @@ describe('cNGNManager', () => {
             });
         });
 
+        describe("Verify Withdrawal", () => {
+            it('should verify transaction reference', async () => {
+                const mockVerification: Transactions = {
+                    id: "txn_123456789",
+                    from: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                    receiver: {
+                        address: "0x123f3a3c58292d1c3eb40808c6412e5a1231234"
+                    },
+                    amount: "0.5",
+                    description: "Transfer ETH to wallet",
+                    createdAt: "2024-03-21T14:30:00Z",
+                    trx_ref: "ETH_TXN_001",
+                    trx_type: TrxType.withdraw,
+                    network: Network.eth,
+                    asset_type: AssetType.fiat,
+                    asset_symbol: "ETH",
+                    base_trx_hash: "0xabcd1234...",
+                    extl_trx_hash: "0xefgh5678...",
+                    explorer_link: "https://etherscan.io/tx/0xabcd1234...",
+                    status: Status.completed
+                };
+
+                const mockResponse: IResponse<Transactions> = {
+                    success: true,
+                    data: mockVerification
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.verifyWithdrawal(mockVerification.trx_ref);
+                expect(result).toEqual(mockResponse);
+            });
+        })
+
         describe('createVirtualAccount', () => {
             it('should create virtual account successfully', async () => {
                 const mintData: CreateVirtualAccount = {
