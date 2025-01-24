@@ -137,9 +137,10 @@ const swapResult = await manager.swapAsset(swapData);
 
 #### Update Business
 ```typescript
+//Note: An exchange address can only be whitelisted once in 24hrs
 const updateData: UpdateExternalAccount = {
     walletAddress: {
-        bscAddress: '0x123...', //Note: Only one address can be updated at a time
+        bscAddress: '0x123...',
     },
     bankDetails: {
         bankName: 'Test Bank',
