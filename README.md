@@ -40,7 +40,9 @@ import {
   CreateVirtualAccount,
   UpdateExternalAccount,
   Network,
-  Swap
+  Swap,
+  ISwapQuoteResponse, 
+  ISwapQuote
 } from 'cngn-typescript-library';
 ```
 
@@ -133,6 +135,17 @@ const swapData: Swap = {
     callbackUrl: 'https://your-callback-url.com' // optional
 };
 const swapResult = await manager.swapAsset(swapData);
+```
+
+#### Get Swap Quote
+```typescript
+const swapQuoteData: ISwapQuote = {
+    destinationNetwork: Network.bsc,
+    destinationAddress: '0x123...',
+    originNetwork: Network.eth,
+    amount: 1000
+};
+const swapQuoteResult = <ISwapQuoteResponse> await manager.getSwapQuote(swapQuoteData);
 ```
 
 #### Update Business
