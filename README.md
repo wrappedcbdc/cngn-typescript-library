@@ -126,7 +126,7 @@ const mintData: CreateVirtualAccount = {
 const virtualAccount = await manager.createVirtualAccount(mintData);
 ```
 
-#### Swap Asset
+#### Bridge Asset
 ```typescript
 const swapData: Swap = {
     destinationNetwork: Network.bsc,
