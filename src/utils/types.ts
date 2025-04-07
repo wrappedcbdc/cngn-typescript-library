@@ -183,3 +183,16 @@ export interface SwapResponse {
     transactionId: string;
     reference: string;
 }
+
+export interface ISwapQuote {
+    amount: number;
+    destinationAddress: string;
+    originNetwork: Network;
+    destinationNetwork: Network;
+}
+
+export interface ISwapQuoteResponse {
+    amountReceivable: string;
+    networkFee: string;
+    bridgeFee: string;
+}

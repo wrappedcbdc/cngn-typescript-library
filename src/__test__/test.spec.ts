@@ -19,9 +19,10 @@ import {
     IWithdrawResponse,
     Swap,
     SwapResponse,
-    ITransactionPagination
+    ITransactionPagination, ISwapQuoteResponse, ISwapQuote
 } from '../utils/types';
 import {cNGNManager} from "../services/cngn.manager";
+import {describe} from "@jest/globals";
 
 // Mock axios
 jest.mock('axios');
@@ -353,6 +354,33 @@ describe('cNGNManager', () => {
                 expect(result).toEqual(mockResponse);
             });
         });
+
+        describe("Get Swap Quote", () => {
+            it('should fetch swap quote successfully', async () => {
+                const swapQuoteData: ISwapQuote = {
+                    destinationNetwork: Network.bsc,
+                    destinationAddress: '0x789...',
+                    originNetwork: Network.eth,
+                    amount: 50
+                };
+
+                const mockSwapQuoteResponse: IResponse<ISwapQuoteResponse> = {
+                    success: true,
+                    data: {
+                        amountReceivable: '0.5',
+                        networkFee: '0.01',
+                        bridgeFee: '0.01',
+                    }
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockSwapQuoteResponse
+                });
+
+                const result = await manager.getSwapQuote(swapQuoteData);
+                expect(result).toEqual(mockSwapQuoteResponse);
+            });
+        })
 
         describe('Error Handling', () => {
             it('should handle API errors properly', async () => {

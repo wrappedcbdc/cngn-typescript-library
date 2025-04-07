@@ -14,7 +14,9 @@ import {
     UpdateExternalAccount,
     Swap,
     SwapResponse,
-    ITransactionPagination
+    ITransactionPagination,
+    ISwapQuote,
+    ISwapQuoteResponse
 } from "../utils/types";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
@@ -27,11 +29,11 @@ export class cNGNManager {
 
     constructor(private readonly secrets: Secrets ) {
         this.axiosInstance = axios.create({
-            baseURL: `https://api.cngn.co/${API_CURRENT_VERSION}/api`,
+            baseURL: `https://staging.api.wrapcbdc.com/${API_CURRENT_VERSION}/api`,
             headers: {
                 'Authorization': `Bearer ${this.secrets.apiKey}`,
                 'Content-Type': 'application/json'
-            }
+            },
         });
 
         this.axiosInstance.interceptors.response.use(
@@ -108,6 +110,10 @@ export class cNGNManager {
 
     public async swapAsset(data: Swap): Promise<IResponse<SwapResponse>> {
         return this.makeCalls('POST', '/swap', data);
+    }
+
+    public async getSwapQuote(data: ISwapQuote): Promise<IResponse<ISwapQuoteResponse>> {
+        return this.makeCalls('POST', '/swap-quote', data);
     }
 
 }
