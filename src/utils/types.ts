@@ -20,7 +20,7 @@ export type Balance = {
     balance: string;
 }
 
-export type ProviderType = 'korapay' | 'budpay';
+export type ProviderType = 'korapay' | 'budpay' | 'bellbank';
 
 export enum TrxType {
     fiat_buy = 'fiat_buy',
