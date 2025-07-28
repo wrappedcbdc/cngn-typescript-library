@@ -20,6 +20,7 @@ export type Balance = {
     balance: string;
 }
 
+/** @deprecated Use of 'budpay' and 'bellbank' is deprecated. */
 export type ProviderType = 'korapay' | 'budpay' | 'bellbank';
 
 export enum TrxType {
