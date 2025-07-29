@@ -368,4 +368,3 @@ This project is licensed under the [ISC License](https://choosealicense.com/lice
 `cNGN`, `Nigerian Naira`, `Stablecoin`, `TypeScript`, `JavaScript`, `Blockchain`, `Crypto`, `Fintech`, `Nigeria`, `Digital Payments`, `API SDK`, `Ethereum`, `Binance Smart Chain`, `Polygon`, `Tron`, `Cross-chain`, `Virtual Accounts`, `Banking Integration`, `Merchant API`, `CBDC`
 
 **Made with ❤️ by [Convexity](https://withconvexity.com) for the Nigerian fintech ecosystem**
-```
