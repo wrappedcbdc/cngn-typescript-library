@@ -4,7 +4,7 @@
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6.2-blue.svg)](https://www.typescriptlang.org/)
 
-**cngn-typescript-library** is the official TypeScript/JavaScript SDK for integrating with the **cNGN API** - Nigeria's leading digital naira stablecoin platform. This lightweight library provides developers with a comprehensive interface for blockchain payments, merchant account management, cross-chain swaps, and virtual account creation across multiple networks including Ethereum, Binance Smart Chain, Polygon, and Tron.
+**cngn-typescript-library** is the official TypeScript/JavaScript SDK for integrating with the **cNGN API** - Nigeria's leading digital naira stablecoin platform. This lightweight library provides developers with a comprehensive interface for blockchain payments, merchant account management, cross-chain swaps, and virtual account creation.
 
 ## 📦 Installation
 
@@ -93,8 +93,7 @@ The cNGN TypeScript library supports all major blockchain networks:
 - Multi-currency support
 
 ### 🏦 Banking Integration
-- Create virtual bank accounts (Korapay, Flutterwave)
-- Nigerian bank integration (GTBank, Access Bank, Zenith, etc.)
+- Create virtual bank accounts (Korapay)
 - Instant naira-to-cNGN conversion
 
 ### 🔄 Cross-Chain Operations
