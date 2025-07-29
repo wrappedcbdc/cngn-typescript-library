@@ -290,13 +290,13 @@ Full TypeScript definitions included:
 ```typescript
 // All interfaces and types are fully typed
 interface Balance {
-    amount: number;
-    currency: string;
-    lastUpdated: Date;
+    asset_type: string;
+    asset_code: any;
+    balance: string;
 }
 
 interface GeneratedWalletAddress {
-    mnemonic: string;
+    mnemonic: string | null;
     address: string;
     network: Network;
     privateKey: string;
