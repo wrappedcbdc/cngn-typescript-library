@@ -136,7 +136,7 @@ import { IWithdraw, Network } from 'cngn-typescript-library';
 // Withdraw cNGN to blockchain address
 const withdrawData: IWithdraw = {
     amount: 50000, // Amount in kobo (500 NGN)
-    address: '0x742d35Cc6634C0532925a3b8D400612d3a5B0d21',
+    address: 'ENTER_ADDRESS',
     network: Network.bsc,
     shouldSaveAddress: true
 };
@@ -156,7 +156,7 @@ import { RedeemAsset } from 'cngn-typescript-library';
 const redeemData: RedeemAsset = {
     amount: 100000, // Amount in kobo (1,000 NGN)
     bankCode: '058', // GTBank code
-    accountNumber: '0123456789',
+    accountNumber: 'ENTER_ACCOUNT_NUMBER',
     saveDetails: true
 };
 
@@ -170,7 +170,7 @@ import { CreateVirtualAccount } from 'cngn-typescript-library';
 
 // Create virtual account for receiving naira
 const virtualAccountData: CreateVirtualAccount = {
-    provider: 'korapay', // or 'flutterwave'
+    provider: 'korapay',
     bank_code: '058' // GTBank
 };
 
@@ -185,7 +185,7 @@ import { Swap, ISwapQuote } from 'cngn-typescript-library';
 // Get swap quote
 const quoteData: ISwapQuote = {
     destinationNetwork: Network.eth,
-    destinationAddress: '0x742d35Cc6634C0532925a3b8D400612d3a5B0d21',
+    destinationAddress: 'ENTER_DESTINATION_ADDRESS',
     originNetwork: Network.bsc,
     amount: 50000
 };
@@ -195,10 +195,10 @@ const quote = await cngnManager.getSwapQuote(quoteData);
 // Execute swap
 const swapData: Swap = {
     destinationNetwork: Network.eth,
-    destinationAddress: '0x742d35Cc6634C0532925a3b8D400612d3a5B0d21',
+    destinationAddress: 'ENTER_DESTINATION_ADDRESS',
     originNetwork: Network.bsc,
     callbackUrl: 'https://yourapp.com/callback', // Optional
-    senderAddress: "0x742d35Cc6634C0532925a3b8D400612d3a5B0d21" //optional
+    senderAddress: "ENTER_SENDER_ADDRESS" //optional
 };
 
 const swapResult = await cngnManager.swapAsset(swapData);
