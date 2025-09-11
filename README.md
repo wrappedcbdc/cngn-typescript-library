@@ -197,7 +197,8 @@ const swapData: Swap = {
     destinationNetwork: Network.eth,
     destinationAddress: '0x742d35Cc6634C0532925a3b8D400612d3a5B0d21',
     originNetwork: Network.bsc,
-    callbackUrl: 'https://yourapp.com/callback' // Optional
+    callbackUrl: 'https://yourapp.com/callback', // Optional
+    senderAddress: "0x742d35Cc6634C0532925a3b8D400612d3a5B0d21" //optional
 };
 
 const swapResult = await cngnManager.swapAsset(swapData);

@@ -177,6 +177,7 @@ export interface Swap {
     destinationAddress: string;
     originNetwork: Network;
     callbackUrl?: string;
+    senderAddress?: string
 }
 
 export interface SwapResponse {

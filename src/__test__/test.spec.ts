@@ -332,7 +332,8 @@ describe('cNGNManager', () => {
                     destinationNetwork: Network.bsc,
                     destinationAddress: '0x789...',
                     originNetwork: Network.bsc,
-                    callbackUrl: 'https://test-callback.com'
+                    callbackUrl: 'https://test-callback.com',
+                    senderAddress: "0x789..."
                 };
 
                 const mockSwapResponse: SwapResponse = {
