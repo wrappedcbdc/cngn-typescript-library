@@ -65,6 +65,7 @@ export enum Network {
     lisk = 'lisk',
     monad = 'monad',
     arc = 'arc',
+    sol = 'sol',
 }
 
 export interface RedeemAsset {
