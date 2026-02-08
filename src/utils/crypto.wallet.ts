@@ -15,6 +15,9 @@ export class CryptoWallet {
 
     private static DERIVATION_PATHS: { [key in Network]?: string } = {
         [Network.eth]: `m/44'/60'/0'/0/0`,
+        [Network.lisk]: `m/44'/60'/0'/0/0`,
+        [Network.monad]: `m/44'/60'/0'/0/0`,
+        [Network.arc]: `m/44'/60'/0'/0/0`,
         [Network.bsc]: `m/44'/60'/0'/0/0`,
         [Network.atc]: `m/44'/60'/0'/0/0`,
         [Network.matic]: `m/44'/60'/0'/0/0`,

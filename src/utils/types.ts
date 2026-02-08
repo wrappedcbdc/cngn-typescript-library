@@ -53,6 +53,20 @@ export interface IWithdraw {
     networkId: string;
 }
 
+
+export enum Network {
+    bsc = 'bsc',
+    atc = 'atc',
+    xbn = 'xbn',
+    eth = 'eth',
+    matic = 'matic',
+    trx = 'trx',
+    base = 'base',
+    lisk = 'lisk',
+    monad = 'monad',
+    arc = 'arc',
+}
+
 export interface RedeemAsset {
     amount: number;
     bankCode: string;
