@@ -7,19 +7,24 @@ import {
     IWithdraw,
     RedeemAsset,
     IVirtualAccount,
-    CreateVirtualAccount,
     ExternalAccounts,
     IBanks,
-    Network,
     TrxType,
     AssetType,
     Status,
-    ProviderType,
     UpdateExternalAccount,
     IWithdrawResponse,
     Swap,
     SwapResponse,
-    ITransactionPagination, ISwapQuoteResponse, ISwapQuote
+    ITransactionPagination,
+    ISwapQuoteResponse,
+    ISwapQuote,
+    WalletAccount,
+    WhiteListAddress,
+    BankAccount,
+    VerifyBankAccount,
+    VerifyBankAccountResponse,
+    SupportedNetworks
 } from '../utils/types';
 import {cNGNManager} from "../services/cngn.manager";
 import {describe} from "@jest/globals";
@@ -101,7 +106,7 @@ describe('cNGNManager', () => {
                             createdAt: "2024-03-21T14:30:00Z",
                             trx_ref: "ETH_TXN_001",
                             trx_type: TrxType.withdraw,
-                            network: Network.eth,
+                            network: 'eth',
                             asset_type: AssetType.fiat,
                             asset_symbol: "ETH",
                             base_trx_hash: "0xabcd1234...",
@@ -134,11 +139,11 @@ describe('cNGNManager', () => {
         });
 
         describe('withdraw', () => {
-            it('should process swap successfully', async () => {
+            it('should process withdrawal successfully', async () => {
                 const withdrawData: IWithdraw = {
                     amount: 1000,
                     address: '0x789...',
-                    network: Network.bsc,
+                    networkId: 'bsc',
                     shouldSaveAddress: true
                 };
 
@@ -174,7 +179,7 @@ describe('cNGNManager', () => {
                     createdAt: "2024-03-21T14:30:00Z",
                     trx_ref: "ETH_TXN_001",
                     trx_type: TrxType.withdraw,
-                    network: Network.eth,
+                    network: 'eth',
                     asset_type: AssetType.fiat,
                     asset_symbol: "ETH",
                     base_trx_hash: "0xabcd1234...",
@@ -197,16 +202,13 @@ describe('cNGNManager', () => {
             });
         })
 
-        describe('createVirtualAccount', () => {
-            it('should create virtual account successfully', async () => {
-                const mintData: CreateVirtualAccount = {
-                    provider: 'korapay' as ProviderType,
-                    bank_code: '123'
-                };
-
+        describe('getVirtualAccount', () => {
+            it('should get virtual account successfully', async () => {
                 const mockVirtualAccount: IVirtualAccount = {
-                    accountReference: 'REF123',
-                    accountNumber: '1234567890'
+                    accountNumber: '1234567890',
+                    accountName: 'Test Account',
+                    bankCode: '123',
+                    bankName: 'Test Bank'
                 };
 
                 const mockResponse: IResponse<IVirtualAccount> = {
@@ -218,42 +220,13 @@ describe('cNGNManager', () => {
                     data: mockResponse
                 });
 
-                const result = await manager.createVirtualAccount(mintData);
+                const result = await manager.getVirtualAccount();
                 expect(result).toEqual(mockResponse);
-            });
-        });
-
-        describe('updateBusiness', () => {
-            it('should update business details successfully', async () => {
-                const updateData: UpdateExternalAccount = {
-                    walletAddress: {
-                        bscAddress: '0x123...',
-                    },
-                    bankDetails: {
-                        bankName: 'Test Bank',
-                        bankAccountName: 'Test Account',
-                        bankAccountNumber: '1234567890'
-                    }
-                };
-
-                const mockAccounts: ExternalAccounts = {
-                    bsc_address: '0x123...',
-                    bank_name: 'Test Bank',
-                    bank_account_name: 'Test Account',
-                    bank_account_number: '1234567890'
-                };
-
-                const mockResponse: IResponse<ExternalAccounts> = {
-                    success: true,
-                    data: mockAccounts
-                };
-
-                mockedAxios.request.mockResolvedValueOnce({
-                    data: mockResponse
+                expect(mockedAxios.request).toHaveBeenCalledWith({
+                    method: 'GET',
+                    url: '/virtual-account',
+                    data: undefined
                 });
-
-                const result = await manager.updateExternalAccounts(updateData);
-                expect(result).toEqual(mockResponse);
             });
         });
 
@@ -303,7 +276,7 @@ describe('cNGNManager', () => {
                     createdAt: "2024-03-21T14:30:00Z",
                     trx_ref: "ETH_TXN_001",
                     trx_type: TrxType.fiat_redeem,
-                    network: Network.eth,
+                    network: 'eth',
                     asset_type: AssetType.fiat,
                     asset_symbol: "ETH",
                     base_trx_hash: "0xabcd1234...",
@@ -329,9 +302,9 @@ describe('cNGNManager', () => {
         describe('swapAsset', () => {
             it('should process swap successfully', async () => {
                 const swapData: Swap = {
-                    destinationNetwork: Network.bsc,
+                    destinationNetworkId: 'bsc',
                     destinationAddress: '0x789...',
-                    originNetwork: Network.bsc,
+                    originNetworkId: 'bsc',
                     callbackUrl: 'https://test-callback.com',
                     senderAddress: "0x789..."
                 };
@@ -359,9 +332,9 @@ describe('cNGNManager', () => {
         describe("Get Swap Quote", () => {
             it('should fetch swap quote successfully', async () => {
                 const swapQuoteData: ISwapQuote = {
-                    destinationNetwork: Network.bsc,
+                    destinationNetworkId: 'bsc',
                     destinationAddress: '0x789...',
-                    originNetwork: Network.eth,
+                    originNetworkId: 'eth',
                     amount: 50
                 };
 
@@ -383,15 +356,271 @@ describe('cNGNManager', () => {
             });
         })
 
+        describe('getSupportedNetworks', () => {
+            it('should fetch supported networks without blockchain info', async () => {
+                const mockNetworks: SupportedNetworks[] = [
+                    {
+                        id: 'net_123',
+                        name: 'Binance Smart Chain',
+                        short_name: 'BSC',
+                        isDisabled: false,
+                        blockchain: {
+                            id: 'bc_123',
+                            name: 'BSC Blockchain',
+                            created_at: '2024-01-01T00:00:00Z',
+                            updated_at: '2024-01-01T00:00:00Z'
+                        }
+                    }
+                ];
+
+                const mockResponse: IResponse<SupportedNetworks[]> = {
+                    success: true,
+                    data: mockNetworks
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.getSupportedNetworks(false);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith({
+                    method: 'GET',
+                    url: '/networks?includeBlockchain=false',
+                    data: undefined
+                });
+            });
+
+            it('should fetch supported networks with blockchain info', async () => {
+                const mockNetworks: SupportedNetworks[] = [
+                    {
+                        id: 'net_123',
+                        name: 'Ethereum',
+                        short_name: 'ETH',
+                        isDisabled: false,
+                        blockchain: {
+                            id: 'bc_456',
+                            name: 'Ethereum Blockchain',
+                            created_at: '2024-01-01T00:00:00Z',
+                            updated_at: '2024-01-01T00:00:00Z'
+                        }
+                    }
+                ];
+
+                const mockResponse: IResponse<SupportedNetworks[]> = {
+                    success: true,
+                    data: mockNetworks
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.getSupportedNetworks(true);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith({
+                    method: 'GET',
+                    url: '/networks?includeBlockchain=true',
+                    data: undefined
+                });
+            });
+        });
+
+        describe('getWhitelistedAddress', () => {
+            it('should fetch whitelisted addresses without network info', async () => {
+                const mockWallets: WalletAccount[] = [
+                    {
+                        id: 'wallet_123',
+                        networkId: 'bsc',
+                        publicKey: '0x123...',
+                        created_at: '2024-01-01T00:00:00Z',
+                        updated_at: '2024-01-01T00:00:00Z'
+                    }
+                ];
+
+                const mockResponse: IResponse<WalletAccount[]> = {
+                    success: true,
+                    data: mockWallets
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.getWhitelistedAddress(false);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith({
+                    method: 'GET',
+                    url: '/whitelisted?includeNetwork=false',
+                    data: undefined
+                });
+            });
+
+            it('should fetch whitelisted addresses with network info', async () => {
+                const mockWallets: WalletAccount[] = [
+                    {
+                        id: 'wallet_123',
+                        networkId: 'eth',
+                        publicKey: '0x456...',
+                        network: {
+                            id: 'net_789',
+                            name: 'Ethereum',
+                            short_name: 'ETH'
+                        },
+                        created_at: '2024-01-01T00:00:00Z',
+                        updated_at: '2024-01-01T00:00:00Z'
+                    }
+                ];
+
+                const mockResponse: IResponse<WalletAccount[]> = {
+                    success: true,
+                    data: mockWallets
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.getWhitelistedAddress(true);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith({
+                    method: 'GET',
+                    url: '/whitelisted?includeNetwork=true',
+                    data: undefined
+                });
+            });
+        });
+
+        describe('whitelistAddress', () => {
+            it('should whitelist address successfully', async () => {
+                const whitelistData: WhiteListAddress = {
+                    address: '0x789...',
+                    networkId: 'bsc'
+                };
+
+                const mockWallets: WalletAccount[] = [
+                    {
+                        id: 'wallet_new',
+                        networkId: 'bsc',
+                        publicKey: '0x789...',
+                        created_at: '2024-01-01T00:00:00Z',
+                        updated_at: '2024-01-01T00:00:00Z'
+                    }
+                ];
+
+                const mockResponse: IResponse<WalletAccount[]> = {
+                    success: true,
+                    data: mockWallets
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.whitelistAddress(whitelistData);
+                expect(result).toEqual(mockResponse);
+            });
+        });
+
+        describe('updateBankAccount', () => {
+            it('should update bank account successfully', async () => {
+                const bankData: BankAccount = {
+                    bankName: 'Test Bank',
+                    bankAccountName: 'Test Account',
+                    bankAccountNumber: '1234567890'
+                };
+
+                const mockResponse: IResponse<BankAccount> = {
+                    success: true,
+                    data: bankData
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.updateBankAccount(bankData);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        method: 'PUT',
+                        url: '/bank-account'
+                    })
+                );
+            });
+        });
+
+        describe('verifyBankAccount', () => {
+            it('should verify bank account successfully', async () => {
+                const verifyData: VerifyBankAccount = {
+                    bankCode: '123',
+                    accountNumber: '1234567890'
+                };
+
+                const mockVerifyResponse: VerifyBankAccountResponse = {
+                    bank_name: 'Test Bank',
+                    bank_code: '123',
+                    account_number: '1234567890',
+                    account_name: 'Test Account'
+                };
+
+                const mockResponse: IResponse<VerifyBankAccountResponse> = {
+                    success: true,
+                    data: mockVerifyResponse
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.verifyBankAccount(verifyData);
+                expect(result).toEqual(mockResponse);
+            });
+        });
+
+        describe('updateExternalAccounts (deprecated)', () => {
+            it('should throw deprecation error', async () => {
+                const updateData: UpdateExternalAccount = {};
+
+                await expect(manager.updateExternalAccounts(updateData)).rejects.toThrow(
+                    'Method is deprecated. Use whitelistAddress() to whitelist an address and updateBankAccount() to update bank account details.'
+                );
+            });
+
+            it('should emit deprecation warning before throwing', async () => {
+                const emitWarningSpy = jest.spyOn(process, 'emitWarning');
+                const updateData: UpdateExternalAccount = {};
+
+                try {
+                    await manager.updateExternalAccounts(updateData);
+                } catch (error) {
+                    // Expected to throw
+                }
+
+                expect(emitWarningSpy).toHaveBeenCalledWith(
+                    expect.stringContaining('[DEPRECATION] cNGNManager.updateExternalAccounts() is deprecated'),
+                    expect.objectContaining({ code: 'CNGN_DEPRECATED_UPDATE_EXTERNAL_ACCOUNTS' })
+                );
+
+                emitWarningSpy.mockRestore();
+            });
+        });
+
         describe('Error Handling', () => {
+            beforeEach(() => {
+                jest.clearAllMocks();
+            });
+
             it('should handle API errors properly', async () => {
                 const errorMessage = 'API Error';
-                mockedAxios.request.mockRejectedValueOnce({
+                const error = {
                     response: {
                         status: 400,
                         data: { message: errorMessage }
                     }
-                });
+                };
+
+                mockedAxios.request.mockRejectedValueOnce(error);
 
                 await expect(manager.getBalance()).rejects.toThrow(
                     `API Error: 400 - ${errorMessage}`
@@ -399,9 +628,12 @@ describe('cNGNManager', () => {
             });
 
             it('should handle network errors', async () => {
-                mockedAxios.request.mockRejectedValueOnce({
-                    request: {}
-                });
+                const error = {
+                    request: {},
+                    response: undefined
+                };
+
+                mockedAxios.request.mockRejectedValueOnce(error);
 
                 await expect(manager.getBalance()).rejects.toThrow(
                     'No response received from API'
@@ -409,7 +641,9 @@ describe('cNGNManager', () => {
             });
 
             it('should handle request setup errors', async () => {
-                mockedAxios.request.mockRejectedValueOnce(new Error('Network Error'));
+                const error = new Error('Network Error');
+
+                mockedAxios.request.mockRejectedValueOnce(error);
 
                 await expect(manager.getBalance()).rejects.toThrow(
                     'Error setting up request: Network Error'

@@ -21,7 +21,6 @@ export type Balance = {
 }
 
 /** @deprecated Use of 'budpay' and 'bellbank' is deprecated. */
-export type ProviderType = 'korapay' | 'budpay' | 'bellbank';
 
 export enum TrxType {
     fiat_buy = 'fiat_buy',
@@ -31,16 +30,6 @@ export enum TrxType {
     withdraw = 'withdraw',
     enaira_redeem = 'enaira_redeem',
     swap = 'swap'
-}
-
-export enum Network {
-    bsc = 'bsc',
-    atc = 'atc',
-    xbn = 'xbn',
-    eth = 'eth',
-    matic = 'matic',
-    trx = 'trx',
-    base = 'base'
 }
 
 export enum AssetType {
@@ -61,7 +50,7 @@ export interface IWithdraw {
     shouldSaveAddress?: boolean;
     amount: number;
     address: string;
-    network: Network;
+    networkId: string;
 }
 
 export interface RedeemAsset {
@@ -71,14 +60,11 @@ export interface RedeemAsset {
     saveDetails?: boolean;
 }
 
-export interface CreateVirtualAccount {
-    provider: ProviderType;
-    bank_code?: string
-}
-
 export interface IVirtualAccount {
-    accountReference: string;
-    accountNumber: string;
+    accountNumber: string,
+    accountName: string,
+    bankCode: string,
+    bankName: string
 }
 
 export interface ExternalAccounts {
@@ -102,26 +88,7 @@ export interface IBanks {
     "nibss_bank_code": string
 }
 
-export interface UpdateExternalAccount {
-    walletAddress?: (
-        | { bantuUserId: string; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
-        | { xbnAddress: string; bantuUserId?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
-        | { bscAddress: string; bantuUserId?: never; xbnAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
-        | { atcAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
-        | { polygonAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; ethAddress?: never; tronAddress?: never; baseAddress?: never; }
-        | { ethAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; tronAddress?: never; baseAddress?: never; }
-        | { tronAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; baseAddress?: never; }
-        | { baseAddress: string; bantuUserId?: never; xbnAddress?: never; bscAddress?: never; atcAddress?: never; polygonAddress?: never; ethAddress?: never; tronAddress?: never; }
-        );
-
-    bankDetails?: {
-        bankName?: string;
-        bankAccountName?: string;
-        bankAccountNumber?: string;
-    };
-}
-
-
+export interface UpdateExternalAccount {}
 
 export interface IWithdrawResponse {
     trxRef: string;
@@ -168,14 +135,14 @@ interface Receiver {
 export interface GeneratedWalletAddress {
     mnemonic: string | null;
     address: string;
-    network: Network;
+    network: string;
     privateKey: string;
 }
 
 export interface Swap {
-    destinationNetwork: Network;
+    destinationNetworkId: string;
     destinationAddress: string;
-    originNetwork: Network;
+    originNetworkId: string;
     callbackUrl?: string;
     senderAddress?: string
 }
@@ -189,12 +156,63 @@ export interface SwapResponse {
 export interface ISwapQuote {
     amount: number;
     destinationAddress: string;
-    originNetwork: Network;
-    destinationNetwork: Network;
+    originNetworkId: string;
+    destinationNetworkId: string;
 }
 
 export interface ISwapQuoteResponse {
     amountReceivable: string;
     networkFee: string;
     bridgeFee: string;
+}
+
+interface Networks {
+    id: string;
+    name: string;
+    short_name: string;
+}
+
+export interface WalletAccount {
+    id: string;
+    networkId: string;
+    publicKey: string;
+    network?: Networks;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface WhiteListAddress {
+    address: string;
+    networkId: string;
+}
+
+export interface BankAccount {
+    bankName: string,
+    bankAccountName: string,
+    bankAccountNumber: string
+}
+
+export interface VerifyBankAccount {
+    bankCode: string,
+    accountNumber: string
+}
+
+export interface VerifyBankAccountResponse {
+    bank_name: string,
+    bank_code: string,
+    account_number: string,
+    account_name: string
+}
+
+export interface SupportedNetworks {
+    id: string,
+    name: string,
+    short_name: string,
+    isDisabled: boolean,
+    blockchain: {
+        id: string,
+        name: string,
+        created_at: string,
+        updated_at: string
+    }
 }
