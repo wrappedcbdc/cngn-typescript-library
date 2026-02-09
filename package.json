@@ -1,6 +1,6 @@
 {
   "name": "cngn-typescript-library",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "A lightweight Typescript library to give you the best experience with managing your cNGN merchant account",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,6 +31,7 @@
     "typescript",
     "stellar",
     "ethereum",
+    "solana",
     "tron",
     "cbdc",
     "nigeria",
@@ -45,8 +46,9 @@
   "dependencies": {
     "@noble/curves": "^1.6.0",
     "@stellar/stellar-sdk": "^12.3.0",
-    "axios": "1.8.2",
+    "axios": "1.12.0",
     "bip39": "^3.1.0",
+    "bs58": "^6.0.0",
     "ed25519-hd-key": "^1.3.0",
     "ethereumjs-wallet": "^1.0.2",
     "keccak256": "^1.0.6",

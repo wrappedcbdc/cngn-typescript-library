@@ -6,6 +6,18 @@
 
 **cngn-typescript-library** is the official TypeScript/JavaScript SDK for integrating with the **cNGN API** - Nigeria's leading digital naira stablecoin platform. This lightweight library provides developers with a comprehensive interface for blockchain payments, merchant account management, cross-chain swaps, and virtual account creation.
 
+## 📋 Table of Contents
+
+- [Installation](#-installation)
+- [Quick Start](#-quick-start-guide)
+- [Supported Networks](#-supported-blockchain-networks)
+- [Core Features](#-core-features)
+- [API Reference](#-api-reference)
+- [Testing](#-testing)
+- [Security](#-security-features)
+- [TypeScript Support](#-typescript-support)
+- [Support](#-support--community)
+
 ## 📦 Installation
 
 Install the cNGN TypeScript library via npm:
@@ -96,7 +108,7 @@ The `Network` enum is used for **wallet generation** with `WalletManager`:
 | Bantu Chain | `Network.xbn` |
 | Lisk | `Network.lisk` |
 | Monad | `Network.monad` |
-| Arbitrum | `Network.arc` |
+| Circle Arc chain | `Network.arc` |
 
 ### Network IDs (for API Operations)
 For API operations (withdrawals, swaps, whitelisting), you need to use **network UUIDs** obtained from the `getSupportedNetworks()` method:
@@ -115,18 +127,6 @@ networks.data?.forEach(network => {
 **Important:**
 - Use `Network` enum for `WalletManager.generateWalletAddress()`
 - Use network UUID strings (from `getSupportedNetworks()`) for `networkId` parameters in API calls
-
-## 📋 Table of Contents
-
-- [Installation](#-installation)
-- [Quick Start](#-quick-start-guide)
-- [Supported Networks](#-supported-blockchain-networks)
-- [API Reference](#-api-reference)
-- [Testing](#-testing)
-- [Security](#-security)
-- [TypeScript Support](#-typescript-support)
-- [Contributing](#-contributing)
-- [Support](#-support)
 
 ## 🎯 Core Features
 
