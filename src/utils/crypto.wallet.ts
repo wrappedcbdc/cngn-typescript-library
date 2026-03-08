@@ -12,7 +12,7 @@ import bs58 from 'bs58';
 
 export class CryptoWallet {
 
-    private static MNEMONIC_ENTROPY_BYTES = 128;
+    private static MNEMONIC_ENTROPY_BYTES = 256;
 
     private static DERIVATION_PATHS: { [key in Network]?: string } = {
         [Network.eth]: `m/44'/60'/0'/0/0`,
