@@ -6,7 +6,6 @@ import {
     IVirtualAccount,
     IWithdraw,
     RedeemAsset,
-    CreateVirtualAccount,
     Secrets,
     IWithdrawResponse,
     Transactions,
@@ -16,7 +15,13 @@ import {
     SwapResponse,
     ITransactionPagination,
     ISwapQuote,
-    ISwapQuoteResponse
+    ISwapQuoteResponse,
+    WalletAccount,
+    WhiteListAddress,
+    BankAccount,
+    VerifyBankAccount,
+    VerifyBankAccountResponse,
+    SupportedNetworks
 } from "../utils/types";
 import {AESCrypto} from "../utils/aes.standard";
 import {Ed25519Crypto} from "../utils/Ed25519.standard";
@@ -96,12 +101,8 @@ export class cNGNManager {
         return this.makeCalls('POST', '/redeemAsset', data);
     }
 
-    public async createVirtualAccount(data: CreateVirtualAccount): Promise<IResponse<IVirtualAccount>> {
-        return this.makeCalls('POST', '/createVirtualAccount', data);
-    }
-
-    public async updateExternalAccounts(data: UpdateExternalAccount): Promise<IResponse<ExternalAccounts>> {
-        return this.makeCalls('POST', '/updateBusiness', data);
+    public async getVirtualAccount(): Promise<IResponse<IVirtualAccount>> {
+        return this.makeCalls('GET', '/virtual-account');
     }
 
     public async getBanks(): Promise<IResponse<IBanks[]>> {
@@ -114,6 +115,44 @@ export class cNGNManager {
 
     public async getSwapQuote(data: ISwapQuote): Promise<IResponse<ISwapQuoteResponse>> {
         return this.makeCalls('POST', '/swap-quote', data);
+    }
+
+    public async getSupportedNetworks(includeBlockchain?: boolean): Promise<IResponse<SupportedNetworks[]>> {
+        return this.makeCalls('GET', '/networks?includeBlockchain=' + (includeBlockchain ? 'true' : 'false'));
+    }
+
+    public async getWhitelistedAddress(includeNetwork?: boolean): Promise<IResponse<WalletAccount[]>> {
+        return this.makeCalls('GET', '/whitelisted?includeNetwork=' + (includeNetwork ? 'true' : 'false'));
+    }
+
+    public async whitelistAddress(data: WhiteListAddress): Promise<IResponse<WalletAccount[]>> {
+        return this.makeCalls('POST', '/whitelist', data);
+    }
+    
+    public async updateBankAccount(data: BankAccount): Promise<IResponse<BankAccount>> {
+        return this.makeCalls('PUT', '/bank-account', data);
+    }
+
+    public async verifyBankAccount(data: VerifyBankAccount): Promise<IResponse<VerifyBankAccountResponse>> {
+        return this.makeCalls('POST', '/account/verify', data);
+    }
+
+    /**
+     * @deprecated This method is deprecated.
+     * Use `whitelistAddress` to whitelist an address and `updateBankAccount` to update bank account details.
+     */
+    public async updateExternalAccounts(_: UpdateExternalAccount): Promise<IResponse<ExternalAccounts>> {
+        const message =
+            '[DEPRECATION] cNGNManager.updateExternalAccounts() is deprecated. ' +
+            'Use whitelistAddress() to whitelist an address and updateBankAccount() to update bank account details.';
+
+        if (typeof process !== 'undefined' && typeof process.emitWarning === 'function') {
+            process.emitWarning(message, { code: 'CNGN_DEPRECATED_UPDATE_EXTERNAL_ACCOUNTS' });
+        } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn(message);
+        }
+
+        throw new Error('Method is deprecated. Use whitelistAddress() to whitelist an address and updateBankAccount() to update bank account details.')
     }
 
 }

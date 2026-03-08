@@ -1,6 +1,6 @@
 {
   "name": "cngn-typescript-library",
-  "version": "1.0.14",
+  "version": "2.0.0",
   "description": "A lightweight Typescript library to give you the best experience with managing your cNGN merchant account",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "dev": "ts-node src/endpoints.test.ts",
+    "dev": "ts-node src/endpoints.ts",
     "release": "npm run test && npm run build && npm version patch && npm pack && gh release create $(node -p \"require('./package.json').version\") --generate-notes"
   },
   "contributors": [
@@ -31,6 +31,7 @@
     "typescript",
     "stellar",
     "ethereum",
+    "solana",
     "tron",
     "cbdc",
     "nigeria",
@@ -45,8 +46,9 @@
   "dependencies": {
     "@noble/curves": "^1.6.0",
     "@stellar/stellar-sdk": "^12.3.0",
-    "axios": "1.8.2",
+    "axios": "1.13.6",
     "bip39": "^3.1.0",
+    "bs58": "^6.0.0",
     "ed25519-hd-key": "^1.3.0",
     "ethereumjs-wallet": "^1.0.2",
     "keccak256": "^1.0.6",
@@ -65,5 +67,6 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
-  }
+  },
+  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a"
 }

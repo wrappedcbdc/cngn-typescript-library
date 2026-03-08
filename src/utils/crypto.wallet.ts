@@ -8,18 +8,23 @@ import nacl from 'tweetnacl';
 import WAValidator from 'multicoin-address-validator';
 import { Keypair } from '@stellar/stellar-sdk';
 import * as ed25519 from 'ed25519-hd-key';
+import bs58 from 'bs58';
 
 export class CryptoWallet {
 
-    private static MNEMONIC_ENTROPY_BYTES = 128;
+    private static MNEMONIC_ENTROPY_BYTES = 256;
 
     private static DERIVATION_PATHS: { [key in Network]?: string } = {
         [Network.eth]: `m/44'/60'/0'/0/0`,
+        [Network.lisk]: `m/44'/60'/0'/0/0`,
+        [Network.monad]: `m/44'/60'/0'/0/0`,
+        [Network.arc]: `m/44'/60'/0'/0/0`,
         [Network.bsc]: `m/44'/60'/0'/0/0`,
         [Network.atc]: `m/44'/60'/0'/0/0`,
         [Network.matic]: `m/44'/60'/0'/0/0`,
         [Network.trx]: `m/44'/195'/0'/0/0`,
-        [Network.xbn]: `m/44'/703'/0'`
+        [Network.xbn]: `m/44'/703'/0'`,
+        [Network.sol]: `m/44'/501'/0'/0'`
     };
 
     static generateWalletWithMnemonicDetails(network: Network): GeneratedWalletAddress {
@@ -30,6 +35,10 @@ export class CryptoWallet {
     private static generateWalletFromMnemonic(mnemonic: string, network: Network): GeneratedWalletAddress {
         if (network === Network.xbn) {
             return this.generateXbnWallet(mnemonic);
+        }
+
+        if (network === Network.sol) {
+            return this.generateSolWallet(mnemonic);
         }
 
         const privateKey = this.getPrivateKeyFromMnemonic(mnemonic, network);
@@ -63,17 +72,8 @@ export class CryptoWallet {
     }
 
     private static getAddressFromPublicKey(publicKey: string, network: Network): string {
-        switch (network) {
-            case Network.eth:
-            case Network.bsc:
-            case Network.atc:
-            case Network.matic:
-                return this.getEthereumStyleAddress(publicKey);
-            case Network.trx:
-                return TronWeb.address.fromHex(this.getEthereumStyleAddress(publicKey));
-            default:
-                throw new Error(`Unsupported network: ${network}`);
-        }
+        if (Network.trx === network) return TronWeb.address.fromHex(this.getEthereumStyleAddress(publicKey));
+        return this.getEthereumStyleAddress(publicKey);
     }
 
     private static getEthereumStyleAddress(publicKey: string): string {
@@ -100,6 +100,21 @@ export class CryptoWallet {
             privateKey: keypair.secret(),
             address: keypair.publicKey(),
             network: Network.xbn,
+        };
+    }
+
+    private static generateSolWallet(mnemonic: string): GeneratedWalletAddress {
+        const seed = bip39.mnemonicToSeedSync(mnemonic);
+        const derivationPath = this.getDerivationPath(Network.sol);
+        const { key } = ed25519.derivePath(derivationPath, seed.toString('hex'));
+        const keypair = nacl.sign.keyPair.fromSeed(key);
+        const publicKeyBase58 = bs58.encode(keypair.publicKey);
+        const privateKeyBase58 = bs58.encode(keypair.secretKey);
+        return {
+            mnemonic,
+            privateKey: privateKeyBase58,
+            address: publicKeyBase58,
+            network: Network.sol,
         };
     }
 }
