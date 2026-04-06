@@ -300,30 +300,14 @@ console.log('Virtual Account Details:', {
 #### Cross-Chain Swaps
 
 ```typescript
-import { Swap, ISwapQuote } from 'cngn-typescript-library';
+import { Swap } from 'cngn-typescript-library';
 
 // Step 1: Get supported networks
 const networks = await cngnManager.getSupportedNetworks(false);
 const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
 const baseNetwork = networks.data?.find(n => n.short_name === 'base');
 
-// Step 2: Get swap quote
-const quoteData: ISwapQuote = {
-    originNetworkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e', // BSC
-    destinationNetworkId: baseNetwork?.id || '03cae1ad-b62c-41c9-bb9e-2f6321eb947e', // Base
-    amount: 1000, // Amount in kobo
-    destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845'
-};
-
-const quote = await cngnManager.getSwapQuote(quoteData);
-
-console.log('Swap Quote:', {
-    amountReceivable: quote.data?.amountReceivable,
-    networkFee: quote.data?.networkFee,
-    bridgeFee: quote.data?.bridgeFee
-});
-
-// Step 3: Execute swap
+// Execute swap
 const swapData: Swap = {
     originNetworkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e',
     destinationNetworkId: baseNetwork?.id || '03cae1ad-b62c-41c9-bb9e-2f6321eb947e',
