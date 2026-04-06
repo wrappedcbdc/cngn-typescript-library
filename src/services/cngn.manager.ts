@@ -14,8 +14,6 @@ import {
     Swap,
     SwapResponse,
     ITransactionPagination,
-    ISwapQuote,
-    ISwapQuoteResponse,
     WalletAccount,
     WhiteListAddress,
     BankAccount,
@@ -110,11 +108,7 @@ export class cNGNManager {
     }
 
     public async swapAsset(data: Swap): Promise<IResponse<SwapResponse>> {
-        return this.makeCalls('POST', '/swap', data);
-    }
-
-    public async getSwapQuote(data: ISwapQuote): Promise<IResponse<ISwapQuoteResponse>> {
-        return this.makeCalls('POST', '/swap-quote', data);
+        return this.makeCalls('POST', '/bridge', data);
     }
 
     public async getSupportedNetworks(includeBlockchain?: boolean): Promise<IResponse<SupportedNetworks[]>> {

@@ -7,7 +7,6 @@ import {
     IWithdraw,
     RedeemAsset,
     IVirtualAccount,
-    ExternalAccounts,
     IBanks,
     TrxType,
     AssetType,
@@ -17,8 +16,6 @@ import {
     Swap,
     SwapResponse,
     ITransactionPagination,
-    ISwapQuoteResponse,
-    ISwapQuote,
     WalletAccount,
     WhiteListAddress,
     BankAccount,
@@ -328,33 +325,6 @@ describe('cNGNManager', () => {
                 expect(result).toEqual(mockResponse);
             });
         });
-
-        describe("Get Swap Quote", () => {
-            it('should fetch swap quote successfully', async () => {
-                const swapQuoteData: ISwapQuote = {
-                    destinationNetworkId: 'bsc',
-                    destinationAddress: '0x789...',
-                    originNetworkId: 'eth',
-                    amount: 50
-                };
-
-                const mockSwapQuoteResponse: IResponse<ISwapQuoteResponse> = {
-                    success: true,
-                    data: {
-                        amountReceivable: '0.5',
-                        networkFee: '0.01',
-                        bridgeFee: '0.01',
-                    }
-                };
-
-                mockedAxios.request.mockResolvedValueOnce({
-                    data: mockSwapQuoteResponse
-                });
-
-                const result = await manager.getSwapQuote(swapQuoteData);
-                expect(result).toEqual(mockSwapQuoteResponse);
-            });
-        })
 
         describe('getSupportedNetworks', () => {
             it('should fetch supported networks without blockchain info', async () => {

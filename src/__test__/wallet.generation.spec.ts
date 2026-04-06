@@ -192,13 +192,13 @@ describe('CryptoWallet', () => {
     });
 
     describe('Mnemonic Validation', () => {
-        it('should generate valid 12-word BIP39 mnemonic', () => {
+        it('should generate valid 24-word BIP39 mnemonic', () => {
             const networks = [Network.eth, Network.bsc, Network.matic, Network.trx, Network.sol, Network.xbn];
 
             networks.forEach(network => {
                 const wallet = CryptoWallet.generateWalletWithMnemonicDetails(network);
                 const words = wallet.mnemonic?.split(' ') || [];
-                expect(words.length).toBe(12);
+                expect(words.length).toBe(24);
             });
         });
 
