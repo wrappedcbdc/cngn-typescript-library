@@ -137,6 +137,7 @@ networks.data?.forEach(network => {
 
 ### 🏦 Banking Integration
 - Create virtual bank accounts 
+- Create temporary (one-time) virtual accounts for customer payments
 - Instant naira-to-cNGN conversion
 
 ### 🔄 Cross-Chain Operations
@@ -190,14 +191,22 @@ async function completeWorkflow() {
     // 4. Verify withdrawal
     const verification = await cngnManager.verifyWithdrawal(withdrawal.data!.trxRef);
 
-    // 5. Cross-chain swap
+    // 5. Get a swap quote (optional, to preview fees)
+    const quote = await cngnManager.getSwapQuote({
+        amount: 1000,
+        destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845',
+        originNetworkId: bscNetwork!.id,
+        destinationNetworkId: baseNetwork!.id
+    });
+
+    // 6. Cross-chain swap
     const swap = await cngnManager.swapAsset({
         originNetworkId: bscNetwork!.id,
         destinationNetworkId: baseNetwork!.id,
         destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845'
     });
 
-    // 6. Redeem to bank account
+    // 7. Redeem to bank account
     const redemption = await cngnManager.redeemAsset({
         amount: 1000000,
         bankCode: '011',
@@ -283,31 +292,78 @@ console.log('Redemption Result:', {
 ```typescript
 import { IVirtualAccount } from 'cngn-typescript-library';
 
-// Get existing virtual account details
-const virtualAccount = await cngnManager.getVirtualAccount();
+// Get existing virtual account details (returns one account per provider)
+const virtualAccounts = await cngnManager.getVirtualAccount();
 
-console.log('Virtual Account Details:', {
-    accountNumber: virtualAccount.data?.accountNumber,
-    accountName: virtualAccount.data?.accountName,
-    bankName: virtualAccount.data?.bankName,
-    bankCode: virtualAccount.data?.bankCode
+virtualAccounts.data?.forEach(account => {
+    console.log('Virtual Account Details:', {
+        accountNumber: account.accountNumber,
+        accountName: account.accountName,
+        bankName: account.bankName,
+        bankCode: account.bankCode
+    });
 });
 
 // Use this virtual account to receive Nigerian Naira
 // Funds sent to this account are automatically converted to cNGN
 ```
 
+#### Temporary Virtual Accounts
+
+Create a one-time virtual account to collect a specific payment from a customer. The account expires after a short window and is tied to the exact amount requested.
+
+```typescript
+import { ICreateTemporaryVirtualAccount } from 'cngn-typescript-library';
+
+const temporaryAccountData: ICreateTemporaryVirtualAccount = {
+    amount: 10000, // Minimum amount is 100 NGN
+    customer: {
+        name: 'John Doe', // Optional
+        email: 'john.doe@example.com' // Required
+    },
+    accountName: 'Order Checkout', // Optional
+    narration: 'Payment for order #1234' // Optional
+};
+
+const temporaryAccount = await cngnManager.createTemporaryVirtualAccount(temporaryAccountData);
+
+console.log('Temporary Account:', {
+    accountNumber: temporaryAccount.data?.accountNumber,
+    accountName: temporaryAccount.data?.accountName,
+    bankName: temporaryAccount.data?.bankName,
+    amountExpected: temporaryAccount.data?.amountExpected,
+    fee: temporaryAccount.data?.fee,
+    reference: temporaryAccount.data?.reference,
+    expiresAt: temporaryAccount.data?.expiresAt // Account expires at this time
+});
+```
+
 #### Cross-Chain Swaps
 
 ```typescript
-import { Swap } from 'cngn-typescript-library';
+import { Swap, ISwapQuote } from 'cngn-typescript-library';
 
 // Step 1: Get supported networks
 const networks = await cngnManager.getSupportedNetworks(false);
 const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
 const baseNetwork = networks.data?.find(n => n.short_name === 'base');
 
-// Execute swap
+// Step 2 (optional): Get a quote before swapping
+const quoteData: ISwapQuote = {
+    amount: 1000,
+    destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845',
+    originNetworkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e',
+    destinationNetworkId: baseNetwork?.id || '03cae1ad-b62c-41c9-bb9e-2f6321eb947e'
+};
+
+const quote = await cngnManager.getSwapQuote(quoteData);
+console.log('Swap Quote:', {
+    amountReceivable: quote.data?.amountReceivable,
+    networkFee: quote.data?.networkFee,
+    bridgeFee: quote.data?.bridgeFee
+});
+
+// Step 3: Execute swap
 const swapData: Swap = {
     originNetworkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e',
     destinationNetworkId: baseNetwork?.id || '03cae1ad-b62c-41c9-bb9e-2f6321eb947e',
@@ -490,7 +546,7 @@ The library maintains >90% test coverage across:
 
 ### Example Usage
 
-Check out `src/endpoints.ts` for comprehensive usage examples of all API methods with real network UUIDs and proper parameter formats.
+See the [API Reference](#-api-reference) section above for comprehensive usage examples of all API methods with proper parameter formats.
 
 ## 🔒 Security Features
 
@@ -612,6 +668,19 @@ enum Network {
 
 #### Virtual Account & Banking
 - `IVirtualAccount` - Virtual account details
+- `ICreateTemporaryVirtualAccount` - Temporary virtual account creation parameters
+  ```typescript
+  interface ICreateTemporaryVirtualAccount {
+      amount: number; // Minimum 100 NGN
+      customer: {
+          name?: string;
+          email: string;
+      };
+      accountName?: string;
+      narration?: string;
+  }
+  ```
+- `TemporaryVirtualAccount` - Temporary virtual account details (account number, fees, expiry)
 - `BankAccount` - Bank account information
 - `VerifyBankAccount` - Bank account verification parameters
 - `VerifyBankAccountResponse` - Bank account verification result

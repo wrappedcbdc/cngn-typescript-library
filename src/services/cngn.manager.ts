@@ -4,6 +4,8 @@ import {
     ExternalAccounts,
     IResponse,
     IVirtualAccount,
+    ICreateTemporaryVirtualAccount,
+    TemporaryVirtualAccount,
     IWithdraw,
     RedeemAsset,
     Secrets,
@@ -13,6 +15,8 @@ import {
     UpdateExternalAccount,
     Swap,
     SwapResponse,
+    ISwapQuote,
+    ISwapQuoteResponse,
     ITransactionPagination,
     WalletAccount,
     WhiteListAddress,
@@ -99,8 +103,12 @@ export class cNGNManager {
         return this.makeCalls('POST', '/redeemAsset', data);
     }
 
-    public async getVirtualAccount(): Promise<IResponse<IVirtualAccount>> {
+    public async getVirtualAccount(): Promise<IResponse<IVirtualAccount[]>> {
         return this.makeCalls('GET', '/virtual-account');
+    }
+
+    public async createTemporaryVirtualAccount(data: ICreateTemporaryVirtualAccount): Promise<IResponse<TemporaryVirtualAccount>> {
+        return this.makeCalls('POST', '/virtual-account/temporary', data);
     }
 
     public async getBanks(): Promise<IResponse<IBanks[]>> {
@@ -109,6 +117,10 @@ export class cNGNManager {
 
     public async swapAsset(data: Swap): Promise<IResponse<SwapResponse>> {
         return this.makeCalls('POST', '/bridge', data);
+    }
+
+    public async getSwapQuote(data: ISwapQuote): Promise<IResponse<ISwapQuoteResponse>> {
+        return this.makeCalls('POST', '/bridge-quote', data);
     }
 
     public async getSupportedNetworks(includeBlockchain?: boolean): Promise<IResponse<SupportedNetworks[]>> {
