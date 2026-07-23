@@ -60,3 +60,8 @@ pnpm-lock.yaml
 *.bak
 *.tmp
 *.tmp.*
+
+# Local dev scratch files (may contain credentials — never commit or publish)
+src/endpoints.ts
+load.js
+stress.js

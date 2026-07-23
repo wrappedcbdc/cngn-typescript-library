@@ -7,6 +7,8 @@ import {
     IWithdraw,
     RedeemAsset,
     IVirtualAccount,
+    ICreateTemporaryVirtualAccount,
+    TemporaryVirtualAccount,
     IBanks,
     TrxType,
     AssetType,
@@ -15,6 +17,8 @@ import {
     IWithdrawResponse,
     Swap,
     SwapResponse,
+    ISwapQuote,
+    ISwapQuoteResponse,
     ITransactionPagination,
     WalletAccount,
     WhiteListAddress,
@@ -200,17 +204,19 @@ describe('cNGNManager', () => {
         })
 
         describe('getVirtualAccount', () => {
-            it('should get virtual account successfully', async () => {
-                const mockVirtualAccount: IVirtualAccount = {
-                    accountNumber: '1234567890',
-                    accountName: 'Test Account',
-                    bankCode: '123',
-                    bankName: 'Test Bank'
-                };
+            it('should get virtual accounts successfully', async () => {
+                const mockVirtualAccounts: IVirtualAccount[] = [
+                    {
+                        accountNumber: '1234567890',
+                        accountName: 'Test Account',
+                        bankCode: '123',
+                        bankName: 'Test Bank'
+                    }
+                ];
 
-                const mockResponse: IResponse<IVirtualAccount> = {
+                const mockResponse: IResponse<IVirtualAccount[]> = {
                     success: true,
-                    data: mockVirtualAccount
+                    data: mockVirtualAccounts
                 };
 
                 mockedAxios.request.mockResolvedValueOnce({
@@ -224,6 +230,55 @@ describe('cNGNManager', () => {
                     url: '/virtual-account',
                     data: undefined
                 });
+            });
+        });
+
+        describe('createTemporaryVirtualAccount', () => {
+            it('should create a temporary virtual account successfully', async () => {
+                const createData: ICreateTemporaryVirtualAccount = {
+                    amount: 10000,
+                    customer: {
+                        name: 'Test Customer',
+                        email: 'customer@test.com'
+                    },
+                    accountName: 'Test Checkout',
+                    narration: 'Order #1234'
+                };
+
+                const mockTemporaryAccount: TemporaryVirtualAccount = {
+                    reference: 'REF123',
+                    paymentReference: 'PAY123',
+                    amount: 10000,
+                    amountExpected: 10000,
+                    fee: 100,
+                    vat: 7.5,
+                    currency: 'NGN',
+                    status: 'pending',
+                    narration: 'Order #1234',
+                    accountNumber: '1234567890',
+                    accountName: 'Test Checkout',
+                    bankName: 'Test Bank',
+                    bankCode: '123',
+                    expiresAt: '2026-01-01T00:30:00Z'
+                };
+
+                const mockResponse: IResponse<TemporaryVirtualAccount> = {
+                    success: true,
+                    data: mockTemporaryAccount
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.createTemporaryVirtualAccount(createData);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        method: 'POST',
+                        url: '/virtual-account/temporary'
+                    })
+                );
             });
         });
 
@@ -323,6 +378,41 @@ describe('cNGNManager', () => {
 
                 const result = await manager.swapAsset(swapData);
                 expect(result).toEqual(mockResponse);
+            });
+        });
+
+        describe('getSwapQuote', () => {
+            it('should fetch swap quote successfully', async () => {
+                const quoteData: ISwapQuote = {
+                    amount: 1000,
+                    destinationAddress: '0x789...',
+                    originNetworkId: 'net_123',
+                    destinationNetworkId: 'net_456'
+                };
+
+                const mockQuoteResponse: ISwapQuoteResponse = {
+                    amountReceivable: '990',
+                    networkFee: '5',
+                    bridgeFee: '5'
+                };
+
+                const mockResponse: IResponse<ISwapQuoteResponse> = {
+                    success: true,
+                    data: mockQuoteResponse
+                };
+
+                mockedAxios.request.mockResolvedValueOnce({
+                    data: mockResponse
+                });
+
+                const result = await manager.getSwapQuote(quoteData);
+                expect(result).toEqual(mockResponse);
+                expect(mockedAxios.request).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        method: 'POST',
+                        url: '/bridge-quote'
+                    })
+                );
             });
         });
 

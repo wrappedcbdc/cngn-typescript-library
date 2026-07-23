@@ -82,6 +82,33 @@ export interface IVirtualAccount {
     bankName: string
 }
 
+export interface ICreateTemporaryVirtualAccount {
+    amount: number;
+    customer: {
+        name?: string;
+        email: string;
+    };
+    accountName?: string;
+    narration?: string;
+}
+
+export interface TemporaryVirtualAccount {
+    reference: string;
+    paymentReference: string;
+    amount: number;
+    amountExpected: number;
+    fee: number;
+    vat: number;
+    currency: string;
+    status: string;
+    narration: string;
+    accountNumber: string;
+    accountName: string;
+    bankName: string;
+    bankCode: string;
+    expiresAt: string;
+}
+
 export interface ExternalAccounts {
     xbn_address?: string | null;
     atc_address?: string | null;
