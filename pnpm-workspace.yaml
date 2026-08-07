@@ -1,0 +1,7 @@
+# Native addons whose install scripts pnpm blocks by default.
+# Both resolve through node-gyp-build, which falls back to a pure-JS
+# implementation when no native binary is present, so declining the build is
+# safe — wallet generation and hashing work either way.
+allowBuilds:
+  keccak: false
+  secp256k1: false
