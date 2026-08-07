@@ -41,7 +41,7 @@ import {
   cNGNManager,
   WalletManager,
   Secrets,
-  Network
+  Blockchain
 } from 'cngn-typescript-library';
 
 // Configure your API credentials
@@ -80,12 +80,12 @@ console.log(`BSC Network ID: ${bscNetwork?.id}`);
 ### Generate Crypto Wallet
 
 ```typescript
-// Generate a new wallet using Network enum
-const wallet = await WalletManager.generateWalletAddress(Network.bsc);
-console.log('New BSC Wallet:', {
+// Generate a new wallet using the Blockchain enum
+const wallet = await WalletManager.generateWalletAddress(Blockchain.EVM);
+console.log('New EVM Wallet:', {
     address: wallet.address,
     privateKey: wallet.privateKey,
-    network: wallet.network
+    blockchain: wallet.blockchain
 });
 ```
 
@@ -93,22 +93,23 @@ console.log('New BSC Wallet:', {
 
 The cNGN TypeScript library supports multiple blockchain networks. Network handling differs based on the operation:
 
-### Network Enum (for Wallet Generation)
-The `Network` enum is used for **wallet generation** with `WalletManager`:
+### Blockchain Enum (for Wallet Generation)
+The `Blockchain` enum is used for **wallet generation** with `WalletManager`. Networks that share a
+derivation path and address format are grouped together — every EVM network derives the exact same
+key pair, so one `Blockchain.EVM` wallet works on all of them:
 
-| Network | Network Enum |
-|---------|--------------|
-| Binance Smart Chain | `Network.bsc` |
-| Ethereum | `Network.eth` |
-| Polygon (Matic) | `Network.matic` |
-| Tron | `Network.trx` |
-| Base | `Network.base` |
-| Solana | `Network.sol` |
-| Asset Chain | `Network.atc` |
-| Bantu Chain | `Network.xbn` |
-| Lisk | `Network.lisk` |
-| Monad | `Network.monad` |
-| Circle Arc chain | `Network.arc` |
+| Blockchain | Enum | Networks covered | Derivation path |
+|------------|------|------------------|-----------------|
+| EVM | `Blockchain.EVM` | Ethereum, BSC, Polygon, Base, Asset Chain, Lisk, Monad, Circle Arc, Celo | `m/44'/60'/0'/0/0` |
+| Tron | `Blockchain.TRON` | Tron | `m/44'/195'/0'/0/0` |
+| Solana | `Blockchain.SOL` | Solana | `m/44'/501'/0'/0'` |
+| Bantu | `Blockchain.XBN` | Bantu Chain | `m/44'/703'/0'` |
+
+> **Migrating from v2.x:** `generateWalletAddress()` no longer accepts the `Network` enum. Replace
+> `Network.bsc` / `Network.eth` / `Network.matic` / `Network.base` / `Network.atc` / `Network.lisk` /
+> `Network.monad` / `Network.arc` with `Blockchain.EVM`, `Network.trx` with `Blockchain.TRON`,
+> `Network.sol` with `Blockchain.SOL`, and `Network.xbn` with `Blockchain.XBN`. The response field
+> `network` is now `blockchain`. The `Network` enum is unchanged and still exported for other uses.
 
 ### Network IDs (for API Operations)
 For API operations (withdrawals, swaps, whitelisting), you need to use **network UUIDs** obtained from the `getSupportedNetworks()` method:
@@ -125,7 +126,7 @@ networks.data?.forEach(network => {
 ```
 
 **Important:**
-- Use `Network` enum for `WalletManager.generateWalletAddress()`
+- Use the `Blockchain` enum for `WalletManager.generateWalletAddress()`
 - Use network UUID strings (from `getSupportedNetworks()`) for `networkId` parameters in API calls
 
 ## 🎯 Core Features
@@ -490,32 +491,48 @@ console.log('Bank Account Updated:', updateResult.data);
 
 ### WalletManager Methods
 
-The `WalletManager` is used for generating cryptocurrency wallets. It uses the `Network` enum (not network UUIDs).
+The `WalletManager` is used for generating cryptocurrency wallets. It uses the `Blockchain` enum (not network UUIDs).
 
 ```typescript
-import { WalletManager, Network } from 'cngn-typescript-library';
+import { WalletManager, Blockchain } from 'cngn-typescript-library';
 
-// Generate new wallets using Network enum
-const bscWallet = await WalletManager.generateWalletAddress(Network.bsc);
-const ethWallet = await WalletManager.generateWalletAddress(Network.eth);
-const polygonWallet = await WalletManager.generateWalletAddress(Network.matic);
-const solanaWallet = await WalletManager.generateWalletAddress(Network.sol);
-const tronWallet = await WalletManager.generateWalletAddress(Network.trx);
+// Generate new wallets using the Blockchain enum
+const evmWallet = await WalletManager.generateWalletAddress(Blockchain.EVM);
+const tronWallet = await WalletManager.generateWalletAddress(Blockchain.TRON);
+const solanaWallet = await WalletManager.generateWalletAddress(Blockchain.SOL);
+const bantuWallet = await WalletManager.generateWalletAddress(Blockchain.XBN);
 
-console.log('Generated BSC Wallet:', {
-    address: bscWallet.address,
-    privateKey: bscWallet.privateKey,
-    mnemonic: bscWallet.mnemonic,
-    network: bscWallet.network // Returns 'bsc'
+console.log('Generated EVM Wallet:', {
+    address: evmWallet.address,
+    privateKey: evmWallet.privateKey,
+    mnemonic: evmWallet.mnemonic,
+    blockchain: evmWallet.blockchain // Returns 'evm'
 });
 
-// Alternative: Use string short name directly
-const baseWallet = await WalletManager.generateWalletAddress('base');
+// The same EVM wallet is usable on Ethereum, BSC, Polygon, Base, Asset Chain,
+// Lisk, Monad and Circle Arc — there is no need to generate one per network.
 
 // ⚠️ Important: These wallets are generated locally
 // They are NOT automatically registered with the cNGN API
 // Use whitelistAddress() to register them for withdrawals
 ```
+
+## 📄 Runnable Example
+
+[`examples/usage.ts`](examples/usage.ts) is a working end-to-end walkthrough — wallet
+generation for all four blockchains, client setup, every read-only call, and each
+mutating operation (withdraw, redeem, swap, whitelist, virtual accounts).
+
+```bash
+# Wallet generation only — no credentials needed
+npm run example
+
+# Add credentials to exercise the API calls too
+CNGN_API_KEY=... CNGN_ENCRYPTION_KEY=... CNGN_PRIVATE_KEY=... npm run example
+```
+
+The money-moving examples are defined but not invoked by the runner — uncomment them
+in `main()` once you've substituted your own values.
 
 ## 🧪 Testing
 
@@ -599,7 +616,7 @@ interface Balance {
 interface GeneratedWalletAddress {
     mnemonic: string | null;
     address: string;
-    network: string;
+    blockchain: Blockchain;
     privateKey: string;
 }
 
@@ -607,6 +624,14 @@ interface IResponse<T> {
     success: boolean;
     data?: T;
     error?: string;
+}
+
+// Blockchain enum for wallet generation
+enum Blockchain {
+    EVM = 'evm',   // eth, bsc, matic, base, atc, lisk, monad, arc, celo
+    TRON = 'tron',
+    SOL = 'sol',
+    XBN = 'xbn'
 }
 
 // Network enum for type-safe network selection
@@ -621,28 +646,30 @@ enum Network {
     lisk = 'lisk',
     monad = 'monad',
     arc = 'arc',
-    sol = 'sol'
+    sol = 'sol',
+    celo = 'celo'
 }
 ```
 
 ### Available Types
 
 #### Enums
-- `Network` - **For wallet generation only** (bsc, eth, matic, trx, base, sol, atc, xbn, lisk, monad, arc)
+- `Blockchain` - **For wallet generation only** (EVM, TRON, SOL, XBN)
   ```typescript
   // ✅ Correct usage
-  const wallet = await WalletManager.generateWalletAddress(Network.bsc);
+  const wallet = await WalletManager.generateWalletAddress(Blockchain.EVM);
 
   // ❌ Don't use for API operations
-  // const withdrawal = await cngnManager.withdraw({ networkId: Network.bsc }); // WRONG!
+  // const withdrawal = await cngnManager.withdraw({ networkId: Blockchain.EVM }); // WRONG!
   ```
+- `Network` - Network short names (bsc, eth, matic, trx, base, sol, atc, xbn, lisk, monad, arc, celo)
 - `TrxType` - Transaction types (fiat_buy, crypto_deposit, enaira_buy, fiat_redeem, withdraw, enaira_redeem, swap)
 - `AssetType` - Asset types (fiat, wrapped, enaira)
 - `Status` - Transaction status (pending, pending_deposit, failed, rejected, completed)
 
-#### Important: Network Enum vs Network ID
-- **`Network` enum** = Used for `WalletManager.generateWalletAddress()`
-  - Values: `Network.bsc`, `Network.eth`, etc.
+#### Important: Blockchain Enum vs Network ID
+- **`Blockchain` enum** = Used for `WalletManager.generateWalletAddress()`
+  - Values: `Blockchain.EVM`, `Blockchain.TRON`, `Blockchain.SOL`, `Blockchain.XBN`
 - **`networkId` (UUID string)** = Used for all API operations (withdraw, swap, whitelist)
   - Values: `'6c3b7ead-a82c-4edd-af75-81be1148482e'`, obtained from `getSupportedNetworks()`
 

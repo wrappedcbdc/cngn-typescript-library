@@ -54,6 +54,19 @@ export interface IWithdraw {
 }
 
 
+/**
+ * Blockchain families used for wallet generation.
+ * Networks that share a derivation path and address format collapse into one
+ * entry here — every EVM network (eth, bsc, matic, base, lisk, monad, arc, atc,
+ * celo) derives the same key pair, so they are all `Blockchain.EVM`.
+ */
+export enum Blockchain {
+    EVM = 'evm',
+    TRON = 'tron',
+    SOL = 'sol',
+    XBN = 'xbn',
+}
+
 export enum Network {
     bsc = 'bsc',
     atc = 'atc',
@@ -66,6 +79,7 @@ export enum Network {
     monad = 'monad',
     arc = 'arc',
     sol = 'sol',
+    celo = 'celo',
 }
 
 export interface RedeemAsset {
@@ -177,7 +191,7 @@ interface Receiver {
 export interface GeneratedWalletAddress {
     mnemonic: string | null;
     address: string;
-    network: string;
+    blockchain: Blockchain;
     privateKey: string;
 }
 

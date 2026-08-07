@@ -1,11 +1,11 @@
-import {GeneratedWalletAddress, IResponse, Network} from "../utils/types";
+import {Blockchain, GeneratedWalletAddress, IResponse} from "../utils/types";
 import {CryptoWallet} from "../utils/crypto.wallet";
 
 export class WalletManager {
 
-    public static async generateWalletAddress(network: Network): Promise<IResponse<GeneratedWalletAddress>> {
+    public static async generateWalletAddress(blockchain: Blockchain): Promise<IResponse<GeneratedWalletAddress>> {
         try {
-            const response = CryptoWallet.generateWalletWithMnemonicDetails(network);
+            const response = CryptoWallet.generateWalletWithMnemonicDetails(blockchain);
             return { success: true, data: response };
         }
         catch (error: any) {

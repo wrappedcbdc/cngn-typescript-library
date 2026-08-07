@@ -2,7 +2,7 @@ import { secp256k1 } from '@noble/curves/secp256k1';
 import keccak256 from 'keccak256';
 import * as bip39 from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
-import { Network, GeneratedWalletAddress } from "./types";
+import { Blockchain, GeneratedWalletAddress } from "./types";
 import { TronWeb } from 'tronweb';
 import nacl from 'tweetnacl';
 import WAValidator from 'multicoin-address-validator';
@@ -14,65 +14,66 @@ export class CryptoWallet {
 
     private static MNEMONIC_ENTROPY_BYTES = 256;
 
-    private static DERIVATION_PATHS: { [key in Network]?: string } = {
-        [Network.eth]: `m/44'/60'/0'/0/0`,
-        [Network.lisk]: `m/44'/60'/0'/0/0`,
-        [Network.monad]: `m/44'/60'/0'/0/0`,
-        [Network.arc]: `m/44'/60'/0'/0/0`,
-        [Network.bsc]: `m/44'/60'/0'/0/0`,
-        [Network.atc]: `m/44'/60'/0'/0/0`,
-        [Network.matic]: `m/44'/60'/0'/0/0`,
-        [Network.trx]: `m/44'/195'/0'/0/0`,
-        [Network.xbn]: `m/44'/703'/0'`,
-        [Network.sol]: `m/44'/501'/0'/0'`
+    private static DERIVATION_PATHS: { [key in Blockchain]: string } = {
+        [Blockchain.EVM]: `m/44'/60'/0'/0/0`,
+        [Blockchain.TRON]: `m/44'/195'/0'/0/0`,
+        [Blockchain.XBN]: `m/44'/703'/0'`,
+        [Blockchain.SOL]: `m/44'/501'/0'/0'`
     };
 
-    static generateWalletWithMnemonicDetails(network: Network): GeneratedWalletAddress {
+    /** Currency codes understood by multicoin-address-validator, per blockchain. */
+    private static VALIDATOR_CURRENCIES: { [key in Blockchain]?: string } = {
+        [Blockchain.EVM]: 'eth',
+        [Blockchain.TRON]: 'trx'
+    };
+
+    static generateWalletWithMnemonicDetails(blockchain: Blockchain): GeneratedWalletAddress {
         const mnemonic = bip39.generateMnemonic(this.MNEMONIC_ENTROPY_BYTES);
-        return this.generateWalletFromMnemonic(mnemonic, network);
+        return this.generateWalletFromMnemonic(mnemonic, blockchain);
     }
 
-    private static generateWalletFromMnemonic(mnemonic: string, network: Network): GeneratedWalletAddress {
-        if (network === Network.xbn) {
+    private static generateWalletFromMnemonic(mnemonic: string, blockchain: Blockchain): GeneratedWalletAddress {
+        if (blockchain === Blockchain.XBN) {
             return this.generateXbnWallet(mnemonic);
         }
 
-        if (network === Network.sol) {
+        if (blockchain === Blockchain.SOL) {
             return this.generateSolWallet(mnemonic);
         }
 
-        const privateKey = this.getPrivateKeyFromMnemonic(mnemonic, network);
-        const publicKey = this.getPublicKey(privateKey, network);
-        const address = this.getAddressFromPublicKey(publicKey, network);
+        const privateKey = this.getPrivateKeyFromMnemonic(mnemonic, blockchain);
+        const publicKey = this.getPublicKey(privateKey, blockchain);
+        const address = this.getAddressFromPublicKey(publicKey, blockchain);
 
-        if ([Network.trx, Network.eth, Network.matic].includes(network) && !WAValidator.validate(address, network)) {
-            return this.generateWalletWithMnemonicDetails(network);
+        const validatorCurrency = this.VALIDATOR_CURRENCIES[blockchain];
+        if (validatorCurrency && !WAValidator.validate(address, validatorCurrency)) {
+            return this.generateWalletWithMnemonicDetails(blockchain);
         }
 
-        return { mnemonic, privateKey, address, network };
+        return { mnemonic, privateKey, address, blockchain };
     }
 
-    private static getPublicKey(privateKey: string, network: Network): string {
-        if (network === Network.xbn) {
+    private static getPublicKey(privateKey: string, blockchain: Blockchain): string {
+        if (blockchain === Blockchain.XBN) {
             const keyPair = nacl.sign.keyPair.fromSeed(Buffer.from(privateKey, 'hex'));
             return Buffer.from(keyPair.publicKey).toString('hex');
         }
         return secp256k1.getPublicKey(privateKey, false).slice(1).toString();
     }
 
-    private static getPrivateKeyFromMnemonic(mnemonic: string, network: Network): string {
+    private static getPrivateKeyFromMnemonic(mnemonic: string, blockchain: Blockchain): string {
         const seed = bip39.mnemonicToSeedSync(mnemonic);
         const hdWallet = hdkey.fromMasterSeed(seed);
-        const derivationPath = this.getDerivationPath(network);
+        const derivationPath = this.getDerivationPath(blockchain);
 
-        if (network === Network.xbn) {
+        if (blockchain === Blockchain.XBN) {
             return hdWallet.derivePath(derivationPath).privateExtendedKey().toString('hex').slice(0, 64);
         }
         return hdWallet.derivePath(derivationPath).getWallet().getPrivateKey().toString('hex');
     }
 
-    private static getAddressFromPublicKey(publicKey: string, network: Network): string {
-        if (Network.trx === network) return TronWeb.address.fromHex(this.getEthereumStyleAddress(publicKey));
+    private static getAddressFromPublicKey(publicKey: string, blockchain: Blockchain): string {
+        if (Blockchain.TRON === blockchain) return TronWeb.address.fromHex(this.getEthereumStyleAddress(publicKey));
         return this.getEthereumStyleAddress(publicKey);
     }
 
@@ -82,30 +83,30 @@ export class CryptoWallet {
         return '0x' + hash.subarray(-20).toString('hex');
     }
 
-    private static getDerivationPath(network: Network): string {
-        const path = this.DERIVATION_PATHS[network];
+    private static getDerivationPath(blockchain: Blockchain): string {
+        const path = this.DERIVATION_PATHS[blockchain];
         if (!path) {
-            throw new Error(`Unsupported network: ${network}`);
+            throw new Error(`Unsupported blockchain: ${blockchain}`);
         }
         return path;
     }
 
     private static generateXbnWallet(mnemonic: string): GeneratedWalletAddress {
         const seed = bip39.mnemonicToSeedSync(mnemonic);
-        const derivationPath = this.getDerivationPath(Network.xbn);
+        const derivationPath = this.getDerivationPath(Blockchain.XBN);
         const { key } = ed25519.derivePath(derivationPath, seed.toString('hex'));
         const keypair = Keypair.fromRawEd25519Seed(key);
         return {
             mnemonic,
             privateKey: keypair.secret(),
             address: keypair.publicKey(),
-            network: Network.xbn,
+            blockchain: Blockchain.XBN,
         };
     }
 
     private static generateSolWallet(mnemonic: string): GeneratedWalletAddress {
         const seed = bip39.mnemonicToSeedSync(mnemonic);
-        const derivationPath = this.getDerivationPath(Network.sol);
+        const derivationPath = this.getDerivationPath(Blockchain.SOL);
         const { key } = ed25519.derivePath(derivationPath, seed.toString('hex'));
         const keypair = nacl.sign.keyPair.fromSeed(key);
         const publicKeyBase58 = bs58.encode(keypair.publicKey);
@@ -114,7 +115,7 @@ export class CryptoWallet {
             mnemonic,
             privateKey: privateKeyBase58,
             address: publicKeyBase58,
-            network: Network.sol,
+            blockchain: Blockchain.SOL,
         };
     }
 }
