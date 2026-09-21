@@ -91,6 +91,10 @@ export class cNGNManager {
         return this.makeCalls('GET', `/transactions?page=${page}&limit=${limit}`);
     }
 
+    public async getTransaction(tnxRef: string): Promise<IResponse<Transactions>> {
+        return this.makeCalls('GET', `/transactions/${encodeURIComponent(tnxRef)}`);
+    }
+
     public async withdraw(data: IWithdraw): Promise<IResponse<IWithdrawResponse>> {
         return this.makeCalls('POST', '/withdraw', data);
     }
