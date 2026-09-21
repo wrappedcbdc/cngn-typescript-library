@@ -233,6 +233,10 @@ console.log('Transactions:', {
     pagination: transactions.data?.pagination // Pagination info
 });
 
+// Get a single transaction by its reference (only your business's transactions are returned)
+const transaction = await cngnManager.getTransaction('TNX-REF-12345');
+console.log('Transaction:', transaction.data?.status);
+
 // Get supported Nigerian banks
 const banks = await cngnManager.getBanks();
 console.log('Banks:', banks.data?.map(bank => ({
