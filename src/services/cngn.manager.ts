@@ -36,7 +36,7 @@ export class cNGNManager {
 
     constructor(private readonly secrets: Secrets ) {
         this.axiosInstance = axios.create({
-            baseURL: `https://api.cngn.co/${API_CURRENT_VERSION}/api`,
+            baseURL: `http://localhost:8081/${API_CURRENT_VERSION}/api`,
             headers: {
                 'Authorization': `Bearer ${this.secrets.apiKey}`,
                 'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ export class cNGNManager {
     }
 
     public async getTransaction(tnxRef: string): Promise<IResponse<Transactions>> {
-        return this.makeCalls('GET', `/transactions/${encodeURIComponent(tnxRef)}`);
+        return this.makeCalls('GET', `/transaction/${encodeURIComponent(tnxRef)}`);
     }
 
     public async withdraw(data: IWithdraw): Promise<IResponse<IWithdrawResponse>> {
