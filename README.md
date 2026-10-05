@@ -1,798 +1,105 @@
-# cNGN TypeScript Library - Nigerian Naira Stablecoin SDK
+# cNGN TypeScript SDK
 
-[![npm version](https://badge.fury.io/js/cngn-typescript-library.svg)](https://badge.fury.io/js/cngn-typescript-library)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6.2-blue.svg)](https://www.typescriptlang.org/)
+Node.js client for the cNGN API. Requires Node.js 24 or later.
 
-**cngn-typescript-library** is the official TypeScript/JavaScript SDK for integrating with the **cNGN API** - Nigeria's leading digital naira stablecoin platform. This lightweight library provides developers with a comprehensive interface for blockchain payments, merchant account management, cross-chain swaps, and virtual account creation.
+## Install
 
-## 📋 Table of Contents
-
-- [Installation](#-installation)
-- [Quick Start](#-quick-start-guide)
-- [Supported Networks](#-supported-blockchain-networks)
-- [Core Features](#-core-features)
-- [API Reference](#-api-reference)
-- [Testing](#-testing)
-- [Security](#-security-features)
-- [TypeScript Support](#-typescript-support)
-- [Support](#-support--community)
-
-## 📦 Installation
-
-Install the cNGN TypeScript library via npm:
-
-```bash
+```sh
 npm install cngn-typescript-library
 ```
 
-Or using yarn:
+## Setup
 
-```bash
-yarn add cngn-typescript-library
+Create an Ed25519 key and upload its public key in the cNGN dashboard:
+
+```sh
+ssh-keygen -t ed25519 -f ./cngn_ed25519
 ```
 
-## 🔧 Quick Start Guide
+Keep the private key and encryption key secure. Use credentials from the same cNGN environment.
 
-### Basic Setup
+```ts
+import { readFileSync } from 'node:fs';
+import { CngnClient } from 'cngn-typescript-library';
 
-```typescript
-import {
-  cNGNManager,
-  WalletManager,
-  Secrets,
-  Blockchain
-} from 'cngn-typescript-library';
-
-// Configure your API credentials
-const secrets: Secrets = {
-    apiKey: 'your-api-key',
-    privateKey: 'your-private-key',
-    encryptionKey: 'your-encryption-key'
-};
-
-// Initialize the cNGN manager
-const cngnManager = new cNGNManager(secrets);
-```
-
-### Check Account Balance
-
-```typescript
-// Get your cNGN balance
-const balance = await cngnManager.getBalance();
-console.log('Balance:', balance.data);
-```
-
-### Get Supported Networks
-
-**Important:** Always call this first to get network UUIDs for API operations.
-
-```typescript
-// Get all supported networks
-const networks = await cngnManager.getSupportedNetworks(false);
-
-// Find a specific network
-const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
-console.log(`BSC Network ID: ${bscNetwork?.id}`);
-// Output: BSC Network ID: 6c3b7ead-a82c-4edd-af75-81be1148482e
-```
-
-### Generate Crypto Wallet
-
-```typescript
-// Generate a new wallet using the Blockchain enum
-const wallet = await WalletManager.generateWalletAddress(Blockchain.EVM);
-console.log('New EVM Wallet:', {
-    address: wallet.address,
-    privateKey: wallet.privateKey,
-    blockchain: wallet.blockchain
-});
-```
-
-## 🌐 Supported Blockchain Networks
-
-The cNGN TypeScript library supports multiple blockchain networks. Network handling differs based on the operation:
-
-### Blockchain Enum (for Wallet Generation)
-The `Blockchain` enum is used for **wallet generation** with `WalletManager`. Networks that share a
-derivation path and address format are grouped together — every EVM network derives the exact same
-key pair, so one `Blockchain.EVM` wallet works on all of them:
-
-| Blockchain | Enum | Networks covered | Derivation path |
-|------------|------|------------------|-----------------|
-| EVM | `Blockchain.EVM` | Ethereum, BSC, Polygon, Base, Asset Chain, Lisk, Monad, Circle Arc, Celo | `m/44'/60'/0'/0/0` |
-| Tron | `Blockchain.TRON` | Tron | `m/44'/195'/0'/0/0` |
-| Solana | `Blockchain.SOL` | Solana | `m/44'/501'/0'/0'` |
-| Bantu | `Blockchain.XBN` | Bantu Chain | `m/44'/703'/0'` |
-
-> **Migrating from v2.x:** `generateWalletAddress()` no longer accepts the `Network` enum. Replace
-> `Network.bsc` / `Network.eth` / `Network.matic` / `Network.base` / `Network.atc` / `Network.lisk` /
-> `Network.monad` / `Network.arc` with `Blockchain.EVM`, `Network.trx` with `Blockchain.TRON`,
-> `Network.sol` with `Blockchain.SOL`, and `Network.xbn` with `Blockchain.XBN`. The response field
-> `network` is now `blockchain`. The `Network` enum is unchanged and still exported for other uses.
-
-### Network IDs (for API Operations)
-For API operations (withdrawals, swaps, whitelisting), you need to use **network UUIDs** obtained from the `getSupportedNetworks()` method:
-
-```typescript
-// Get supported networks with their IDs
-const networks = await cngnManager.getSupportedNetworks(true);
-
-// Example response
-networks.data?.forEach(network => {
-    console.log(`${network.name}: ${network.id}`);
-    // Output: "Binance Smart Chain: 6c3b7ead-a82c-4edd-af75-81be1148482e"
-});
-```
-
-**Important:**
-- Use the `Blockchain` enum for `WalletManager.generateWalletAddress()`
-- Use network UUID strings (from `getSupportedNetworks()`) for `networkId` parameters in API calls
-
-## 🎯 Core Features
-
-### 💰 Account Management
-- Check cNGN balance and transaction history
-- Real-time balance updates
-- Multi-currency support
-
-### 🏦 Banking Integration
-- Create virtual bank accounts 
-- Create temporary (one-time) virtual accounts for customer payments
-- Instant naira-to-cNGN conversion
-
-### 🔄 Cross-Chain Operations
-- Swap cNGN between different blockchains
-- Bridge assets across networks
-- Real-time swap quotes and fees
-
-### 💸 Withdrawals & Redemptions
-- Withdraw cNGN to any supported blockchain
-- Redeem cNGN back to Nigerian bank accounts
-- Verify withdrawal status and references
-
-### 👛 Wallet Management
-- Generate HD wallets for any network
-- Multi-signature wallet support
-- Secure private key management
-
-## 📚 API Reference
-
-### Complete Workflow Example
-
-```typescript
-import { cNGNManager, Secrets } from 'cngn-typescript-library';
-
-const secrets: Secrets = {
-    apiKey: process.env.CNGN_API_KEY!,
-    privateKey: process.env.CNGN_PRIVATE_KEY!,
-    encryptionKey: process.env.CNGN_ENCRYPTION_KEY!
-};
-
-const cngnManager = new cNGNManager(secrets);
-
-async function completeWorkflow() {
-    // 1. Get supported networks (always do this first to get network IDs)
-    const networks = await cngnManager.getSupportedNetworks(true);
-    const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
-    const baseNetwork = networks.data?.find(n => n.short_name === 'base');
-
-    // 2. Check balance
-    const balance = await cngnManager.getBalance();
-    console.log('Current Balance:', balance.data);
-
-    // 3. Withdraw to blockchain
-    const withdrawal = await cngnManager.withdraw({
-        amount: 1600,
-        address: '0x1767A569Fa8d72527b7a5792F431bF75045AdFc9',
-        networkId: bscNetwork!.id,
-        shouldSaveAddress: false
-    });
-
-    // 4. Verify withdrawal
-    const verification = await cngnManager.verifyWithdrawal(withdrawal.data!.trxRef);
-
-    // 5. Get a swap quote (optional, to preview fees)
-    const quote = await cngnManager.getSwapQuote({
-        amount: 1000,
-        destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845',
-        originNetworkId: bscNetwork!.id,
-        destinationNetworkId: baseNetwork!.id
-    });
-
-    // 6. Cross-chain swap
-    const swap = await cngnManager.swapAsset({
-        originNetworkId: bscNetwork!.id,
-        destinationNetworkId: baseNetwork!.id,
-        destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845'
-    });
-
-    // 7. Redeem to bank account
-    const redemption = await cngnManager.redeemAsset({
-        amount: 1000000,
-        bankCode: '011',
-        accountNumber: '3069839406'
-    });
-}
-```
-
-### cNGNManager Methods
-
-#### Account Operations
-
-```typescript
-// Get account balance
-const balance = await cngnManager.getBalance();
-console.log('Balance:', balance.data);
-
-// Get transaction history with pagination
-const transactions = await cngnManager.getTransactionHistory(1, 20);
-
-console.log('Transactions:', {
-    data: transactions.data?.data, // Array of transactions
-    pagination: transactions.data?.pagination // Pagination info
+const client = new CngnClient({
+  apiKey: process.env.CNGN_API_KEY!,
+  encryptionKey: process.env.CNGN_ENCRYPTION_KEY!,
+  privateKey: readFileSync(process.env.CNGN_PRIVATE_KEY_PATH!, 'utf8'),
 });
 
-// Get a single transaction by its reference (only your business's transactions are returned)
-const transaction = await cngnManager.getTransaction('TNX-REF-12345');
-console.log('Transaction:', transaction.data?.status);
-
-// Get supported Nigerian banks
-const banks = await cngnManager.getBanks();
-console.log('Banks:', banks.data?.map(bank => ({
-    name: bank.name,
-    code: bank.code
-})));
-```
-
-#### Withdrawal Operations
-
-```typescript
-import { IWithdraw } from 'cngn-typescript-library';
-
-// Step 1: Get supported networks to find the network ID
-const networks = await cngnManager.getSupportedNetworks(false);
-const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
-
-// Step 2: Withdraw cNGN to blockchain address using network UUID
-const withdrawData: IWithdraw = {
-    amount: 1600, // Amount in kobo (16 NGN)
-    address: '0x1767A569Fa8d72527b7a5792F431bF75045AdFc9',
-    networkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e', // Network UUID from API
-    shouldSaveAddress: false
-};
-
-const withdrawResult = await cngnManager.withdraw(withdrawData);
-console.log('Transaction Reference:', withdrawResult.data?.trxRef);
-
-// Verify withdrawal status
-const verification = await cngnManager.verifyWithdrawal(withdrawResult.data?.trxRef || 'TNX-REF-12345');
-console.log('Withdrawal Status:', verification.data?.status);
-```
-
-#### Bank Redemption
-
-```typescript
-import { RedeemAsset } from 'cngn-typescript-library';
-
-// Redeem cNGN to Nigerian bank account
-const redeemData: RedeemAsset = {
-    amount: 1000000, // Amount in kobo (10,000 NGN)
-    bankCode: '011', // First Bank code
-    accountNumber: '3069839406',
-    saveDetails: true // Save bank details for future use
-};
-
-const redemption = await cngnManager.redeemAsset(redeemData);
-
-console.log('Redemption Result:', {
-    transactionRef: redemption.data?.trx_ref,
-    status: redemption.data?.status,
-    amount: redemption.data?.amount
-});
-```
-
-#### Virtual Account Management
-
-```typescript
-import { IVirtualAccount } from 'cngn-typescript-library';
-
-// Get existing virtual account details (returns one account per provider)
-const virtualAccounts = await cngnManager.getVirtualAccount();
-
-virtualAccounts.data?.forEach(account => {
-    console.log('Virtual Account Details:', {
-        accountNumber: account.accountNumber,
-        accountName: account.accountName,
-        bankName: account.bankName,
-        bankCode: account.bankCode
-    });
-});
-
-// Use this virtual account to receive Nigerian Naira
-// Funds sent to this account are automatically converted to cNGN
-```
-
-#### Temporary Virtual Accounts
-
-Create a one-time virtual account to collect a specific payment from a customer. The account expires after a short window and is tied to the exact amount requested.
-
-```typescript
-import { ICreateTemporaryVirtualAccount } from 'cngn-typescript-library';
-
-const temporaryAccountData: ICreateTemporaryVirtualAccount = {
-    amount: 10000, // Minimum amount is 100 NGN
-    customer: {
-        name: 'John Doe', // Optional
-        email: 'john.doe@example.com' // Required
-    },
-    accountName: 'Order Checkout', // Optional
-    narration: 'Payment for order #1234' // Optional
-};
-
-const temporaryAccount = await cngnManager.createTemporaryVirtualAccount(temporaryAccountData);
-
-console.log('Temporary Account:', {
-    accountNumber: temporaryAccount.data?.accountNumber,
-    accountName: temporaryAccount.data?.accountName,
-    bankName: temporaryAccount.data?.bankName,
-    amountExpected: temporaryAccount.data?.amountExpected,
-    fee: temporaryAccount.data?.fee,
-    reference: temporaryAccount.data?.reference,
-    expiresAt: temporaryAccount.data?.expiresAt // Account expires at this time
-});
-```
-
-#### Cross-Chain Swaps
-
-```typescript
-import { Swap, ISwapQuote } from 'cngn-typescript-library';
-
-// Step 1: Get supported networks
-const networks = await cngnManager.getSupportedNetworks(false);
-const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
-const baseNetwork = networks.data?.find(n => n.short_name === 'base');
-
-// Step 2 (optional): Get a quote before swapping
-const quoteData: ISwapQuote = {
-    amount: 1000,
-    destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845',
-    originNetworkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e',
-    destinationNetworkId: baseNetwork?.id || '03cae1ad-b62c-41c9-bb9e-2f6321eb947e'
-};
-
-const quote = await cngnManager.getSwapQuote(quoteData);
-console.log('Swap Quote:', {
-    amountReceivable: quote.data?.amountReceivable,
-    networkFee: quote.data?.networkFee,
-    bridgeFee: quote.data?.bridgeFee
-});
-
-// Step 3: Execute swap
-const swapData: Swap = {
-    originNetworkId: bscNetwork?.id || '6c3b7ead-a82c-4edd-af75-81be1148482e',
-    destinationNetworkId: baseNetwork?.id || '03cae1ad-b62c-41c9-bb9e-2f6321eb947e',
-    destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845',
-    callbackUrl: 'https://yourapp.com/callback', // Optional
-    senderAddress: '0x1767A569Fa8d72527b7a5792F431bF75045AdFc9' // Optional
-};
-
-const swapResult = await cngnManager.swapAsset(swapData);
-console.log('Swap Response:', {
-    receivableAddress: swapResult.data?.receivableAddress,
-    transactionId: swapResult.data?.transactionId,
-    reference: swapResult.data?.reference
-});
-```
-
-#### Network Management
-
-```typescript
-import { SupportedNetworks } from 'cngn-typescript-library';
-
-// Get all supported networks (without blockchain details)
-const networks = await cngnManager.getSupportedNetworks(false);
-
-console.log('Supported Networks:');
-networks.data?.forEach(network => {
-    console.log({
-        id: network.id, // UUID to use for networkId in API calls
-        name: network.name,
-        shortName: network.short_name,
-        isDisabled: network.isDisabled
-    });
-});
-
-// Get supported networks with blockchain details
-const networksWithBlockchain = await cngnManager.getSupportedNetworks(true);
-
-console.log('Networks with Blockchain Info:');
-networksWithBlockchain.data?.forEach(network => {
-    console.log({
-        id: network.id,
-        name: network.name,
-        blockchain: network.blockchain.name
-    });
-});
-```
-
-#### Address Whitelisting
-
-```typescript
-import { WhiteListAddress, WalletAccount } from 'cngn-typescript-library';
-
-// Step 1: Get network ID from supported networks
-const networks = await cngnManager.getSupportedNetworks(false);
-const bscNetwork = networks.data?.find(n => n.short_name === 'bsc');
-
-// Step 2: Whitelist a new address
-const whitelistData: WhiteListAddress = {
-    address: '0x2DeD9c59cB12bF503dCf089BE13380296590b706',
-    networkId: bscNetwork?.id || '9840303d-452b-4e9a-9646-e1141103bf9a' // Network UUID
-};
-
-const whitelistResult = await cngnManager.whitelistAddress(whitelistData);
-console.log('Whitelisted:', whitelistResult.data);
-
-// Get all whitelisted addresses (without network details)
-const whitelistedAddresses = await cngnManager.getWhitelistedAddress(false);
-
-console.log('Whitelisted Addresses:', whitelistedAddresses.data?.map(w => ({
-    id: w.id,
-    publicKey: w.publicKey,
-    networkId: w.networkId
-})));
-
-// Get whitelisted addresses with full network information
-const whitelistedWithNetwork = await cngnManager.getWhitelistedAddress(true);
-
-console.log('Whitelisted with Network Info:', whitelistedWithNetwork.data?.map(w => ({
-    id: w.id,
-    publicKey: w.publicKey,
-    network: w.network // Full network object included
-})));
-```
-
-#### Bank Account Management
-
-```typescript
-import { BankAccount, VerifyBankAccount } from 'cngn-typescript-library';
-
-// Step 1: Get list of supported banks
-const banks = await cngnManager.getBanks();
-
-console.log('Available Banks:', banks.data?.map(bank => ({
-    name: bank.name,
-    code: bank.code,
-    country: bank.country
-})));
-
-// Step 2: Verify bank account details before transactions
-const verifyData: VerifyBankAccount = {
-    bankCode: '011', // First Bank code
-    accountNumber: '3069839406'
-};
-
-const verification = await cngnManager.verifyBankAccount(verifyData);
-
-console.log('Account Details:', {
-    bankName: verification.data?.bank_name,
-    accountName: verification.data?.account_name,
-    bankCode: verification.data?.bank_code,
-    accountNumber: verification.data?.account_number
-});
-
-// Step 3: Update/save bank account information
-const bankData: BankAccount = {
-    bankName: 'First Bank of Nigeria',
-    bankAccountName: 'EZUMAH JEREMIAH KALU',
-    bankAccountNumber: '3069839406'
-};
-
-const updateResult = await cngnManager.updateBankAccount(bankData);
-console.log('Bank Account Updated:', updateResult.data);
-```
-
-### WalletManager Methods
-
-The `WalletManager` is used for generating cryptocurrency wallets. It uses the `Blockchain` enum (not network UUIDs).
-
-```typescript
-import { WalletManager, Blockchain } from 'cngn-typescript-library';
-
-// Generate new wallets using the Blockchain enum
-const evmWallet = await WalletManager.generateWalletAddress(Blockchain.EVM);
-const tronWallet = await WalletManager.generateWalletAddress(Blockchain.TRON);
-const solanaWallet = await WalletManager.generateWalletAddress(Blockchain.SOL);
-const bantuWallet = await WalletManager.generateWalletAddress(Blockchain.XBN);
-
-console.log('Generated EVM Wallet:', {
-    address: evmWallet.address,
-    privateKey: evmWallet.privateKey,
-    mnemonic: evmWallet.mnemonic,
-    blockchain: evmWallet.blockchain // Returns 'evm'
-});
-
-// The same EVM wallet is usable on Ethereum, BSC, Polygon, Base, Asset Chain,
-// Lisk, Monad and Circle Arc — there is no need to generate one per network.
-
-// ⚠️ Important: These wallets are generated locally
-// They are NOT automatically registered with the cNGN API
-// Use whitelistAddress() to register them for withdrawals
-```
-
-## 📄 Runnable Example
-
-[`examples/usage.ts`](examples/usage.ts) is a working end-to-end walkthrough — wallet
-generation for all four blockchains, client setup, every read-only call, and each
-mutating operation (withdraw, redeem, swap, whitelist, virtual accounts).
-
-```bash
-# Wallet generation only — no credentials needed
-npm run example
-
-# Add credentials to exercise the API calls too
-CNGN_API_KEY=... CNGN_ENCRYPTION_KEY=... CNGN_PRIVATE_KEY=... npm run example
-```
-
-The money-moving examples are defined but not invoked by the runner — uncomment them
-in `main()` once you've substituted your own values.
-
-## 🧪 Testing
-
-Run the comprehensive test suite:
-
-```bash
-# Install dependencies
-npm install
-
-# Run all tests
-npm test
-
-# Run tests with coverage report
-npm run test:coverage
-
-# Run tests in watch mode
-npm run test:watch
-```
-
-### Test Coverage
-
-The library maintains >90% test coverage across:
-- API endpoint integration
-- Wallet generation functionality
-- Error handling scenarios
-- Network compatibility
-- TypeScript type validation
-
-### Example Usage
-
-See the [API Reference](#-api-reference) section above for comprehensive usage examples of all API methods with proper parameter formats.
-
-## 🔒 Security Features
-
-### Encryption & Cryptography
-- **AES Encryption** for all API requests
-- **Ed25519 Decryption** for secure response handling
-- **BIP39 Mnemonic** generation for wallet creation
-- **HD Wallet** derivation paths
-
-### Best Practices
-- Never log sensitive credentials
-- Use environment variables for API keys
-- Implement proper error handling
-- Validate all user inputs
-
-```typescript
-// Secure credential management
-const secrets: Secrets = {
-    apiKey: process.env.CNGN_API_KEY!,
-    privateKey: process.env.CNGN_PRIVATE_KEY!,
-    encryptionKey: process.env.CNGN_ENCRYPTION_KEY!
-};
-
-// Proper error handling
 try {
-    const result = await manager.getBalance();
-} catch (error) {
-    if (error.response?.status === 401) {
-        console.error('Invalid API credentials');
-    } else if (error.response?.status === 429) {
-        console.error('Rate limit exceeded');
-    } else {
-        console.error('Operation failed:', error.message);
-    }
+  const balances = await client.getBalance();
+  const networks = await client.getNetworks();
+  console.log(balances, networks);
+} finally {
+  client.close();
 }
 ```
 
-## 📝 TypeScript Support
+`apiKey` uses a `cngn_test_` or `cngn_live_` prefix. The client checks that prefix against the optional `environment` setting. `baseUrl`, `timeoutMs`, and `maxRetries` are configurable.
 
-Full TypeScript definitions included:
+## API methods
 
-```typescript
-// All interfaces and types are fully typed
-interface Balance {
-    asset_type: string;
-    asset_code: any;
-    balance: string;
-}
+| Method | Operation |
+| --- | --- |
+| `getBalance(options?)` | List balances |
+| `getTransactions(page?, limit?, options?)` | Get a transaction page |
+| `iterateTransactions(limit?, options?)` | Iterate transaction pages |
+| `getNetworks(includeBlockchain?, options?)` | List networks |
+| `getVirtualAccounts(options?)` | List virtual accounts |
+| `createTemporaryVirtualAccount(input, options?)` | Create a temporary virtual account |
+| `redeemAsset(input, options?)` | Redeem to a bank account |
+| `verifyBankAccount(bankCode, accountNumber, options?)` | Verify bank details |
+| `getBanks(options?)` | List banks |
+| `updateBankAccount(input)` | Update settlement bank details |
+| `withdraw(input, options?)` | Withdraw to a wallet |
+| `verifyWithdrawal(reference, options?)` | Get a withdrawal |
+| `getBridgeQuote(input, options?)` | Get a bridge quote |
+| `bridge(input, options?)` | Submit a bridge request |
+| `whitelistAddress(networkId, address)` | Add an address |
+| `getWhitelistedAddresses(includeNetwork?, options?)` | List saved addresses |
 
-interface GeneratedWalletAddress {
-    mnemonic: string | null;
-    address: string;
-    blockchain: Blockchain;
-    privateKey: string;
-}
+Request bodies are encrypted before transmission. Successful encrypted responses are decrypted by the client. API failures raise `CngnError` with `kind`, `status`, and `response` fields.
 
-interface IResponse<T> {
-    success: boolean;
-    data?: T;
-    error?: string;
-}
+Read requests and bank verification may retry after transport errors, HTTP 429, or HTTP 5xx. Transfers and temporary account creation retry only when `options.idempotencyKey` is set. The same key is reused for each attempt. HTTP 429 waits 60 seconds before retrying. Methods with an `options` parameter accept `options.signal` for cancellation.
 
-// Blockchain enum for wallet generation
-enum Blockchain {
-    EVM = 'evm',   // eth, bsc, matic, base, atc, lisk, monad, arc, celo
-    TRON = 'tron',
-    SOL = 'sol',
-    XBN = 'xbn'
-}
-
-// Network enum for type-safe network selection
-enum Network {
-    bsc = 'bsc',
-    atc = 'atc',
-    xbn = 'xbn',
-    eth = 'eth',
-    matic = 'matic',
-    trx = 'trx',
-    base = 'base',
-    lisk = 'lisk',
-    monad = 'monad',
-    arc = 'arc',
-    sol = 'sol',
-    celo = 'celo'
-}
+```ts
+const result = await client.withdraw(
+  { amount: 100, address: '0x...', networkId: 'network-id' },
+  { idempotencyKey: 'withdrawal-123' },
+);
 ```
 
-### Available Types
+## Webhooks
 
-#### Enums
-- `Blockchain` - **For wallet generation only** (EVM, TRON, SOL, XBN)
-  ```typescript
-  // ✅ Correct usage
-  const wallet = await WalletManager.generateWalletAddress(Blockchain.EVM);
+Verify the exact request body before parsing it. The signature is read from `X-cNGN-Signature`.
 
-  // ❌ Don't use for API operations
-  // const withdrawal = await cngnManager.withdraw({ networkId: Blockchain.EVM }); // WRONG!
-  ```
-- `Network` - Network short names (bsc, eth, matic, trx, base, sol, atc, xbn, lisk, monad, arc, celo)
-- `TrxType` - Transaction types (fiat_buy, crypto_deposit, enaira_buy, fiat_redeem, withdraw, enaira_redeem, swap)
-- `AssetType` - Asset types (fiat, wrapped, enaira)
-- `Status` - Transaction status (pending, pending_deposit, failed, rejected, completed)
+```ts
+import { parseWebhook, verifyWebhook } from 'cngn-typescript-library';
 
-#### Important: Blockchain Enum vs Network ID
-- **`Blockchain` enum** = Used for `WalletManager.generateWalletAddress()`
-  - Values: `Blockchain.EVM`, `Blockchain.TRON`, `Blockchain.SOL`, `Blockchain.XBN`
-- **`networkId` (UUID string)** = Used for all API operations (withdraw, swap, whitelist)
-  - Values: `'6c3b7ead-a82c-4edd-af75-81be1148482e'`, obtained from `getSupportedNetworks()`
-
-#### Core Types
-- `Secrets` - API credentials configuration
-- `IResponse<T>` - Standard API response wrapper
-- `Balance` - Account balance information
-- `Transactions` - Transaction history details
-- `ITransactionPagination` - Paginated transaction history
-
-#### Transaction Types
-- `IWithdraw` - Withdrawal parameters
-  ```typescript
-  interface IWithdraw {
-      shouldSaveAddress?: boolean;
-      amount: number;
-      address: string;
-      networkId: string; // UUID from getSupportedNetworks()
-  }
-  ```
-- `IWithdrawResponse` - Withdrawal response with transaction reference
-- `RedeemAsset` - Bank redemption data
-
-#### Virtual Account & Banking
-- `IVirtualAccount` - Virtual account details
-- `ICreateTemporaryVirtualAccount` - Temporary virtual account creation parameters
-  ```typescript
-  interface ICreateTemporaryVirtualAccount {
-      amount: number; // Minimum 100 NGN
-      customer: {
-          name?: string;
-          email: string;
-      };
-      accountName?: string;
-      narration?: string;
-  }
-  ```
-- `TemporaryVirtualAccount` - Temporary virtual account details (account number, fees, expiry)
-- `BankAccount` - Bank account information
-- `VerifyBankAccount` - Bank account verification parameters
-- `VerifyBankAccountResponse` - Bank account verification result
-- `IBanks` - Supported banks list
-
-#### Swap & Cross-Chain
-- `Swap` - Cross-chain swap parameters
-  ```typescript
-  interface Swap {
-      destinationNetworkId: string; // UUID from getSupportedNetworks()
-      destinationAddress: string;
-      originNetworkId: string; // UUID from getSupportedNetworks()
-      callbackUrl?: string;
-      senderAddress?: string;
-  }
-  ```
-- `SwapResponse` - Swap transaction response
-- `ISwapQuote` - Swap quote parameters
-  ```typescript
-  interface ISwapQuote {
-      amount: number;
-      destinationAddress: string;
-      originNetworkId: string; // UUID from getSupportedNetworks()
-      destinationNetworkId: string; // UUID from getSupportedNetworks()
-  }
-  ```
-- `ISwapQuoteResponse` - Swap quote with fees
-
-#### Network & Address Management
-- `SupportedNetworks` - List of supported blockchain networks
-- `WalletAccount` - Whitelisted wallet account
-- `WhiteListAddress` - Address whitelisting parameters
-
-#### Wallet Generation
-- `GeneratedWalletAddress` - Wallet generation response
-
-#### Deprecated
-- `UpdateExternalAccount` - ⚠️ **Deprecated**: Use `whitelistAddress()` and `updateBankAccount()` instead
-
-## 🚀 Production Usage
-
-### Environment Configuration
-
-```bash
-# .env file
-CNGN_API_KEY=your_production_api_key
-CNGN_PRIVATE_KEY=your_production_private_key
-CNGN_ENCRYPTION_KEY=your_production_encryption_key
+const rawBody = Buffer.from(requestBody);
+const signature = requestHeaders['x-cngn-signature'];
+if (!verifyWebhook(rawBody, signature, process.env.CNGN_WEBHOOK_SECRET!)) {
+  throw new Error('Invalid webhook signature');
+}
+const event = parseWebhook(rawBody);
 ```
 
-### Development Setup
+## Wallets
 
-```bash
-git clone https://github.com/your-username/cngn-typescript-library.git
-cd cngn-typescript-library
-npm install
-npm run build
-npm test
+`Wallets.generate()` and `Wallets.fromMnemonic()` support EVM, TRON, SOL, STELLAR, and XBN. Generated wallet objects contain a private key and recovery phrase. Store them securely and keep them out of logs.
+
+```ts
+import { Blockchain, Wallets } from 'cngn-typescript-library';
+
+const wallet = Wallets.generate(Blockchain.EVM);
+const valid = Wallets.validateAddress(Blockchain.EVM, wallet.address);
 ```
 
-## 📞 Support & Community
+## Development
 
-- **GitHub Issues**: [Report bugs and request features](https://github.com/wrappedcbdc/cngn-typescript-library/issues)
-- **Documentation**: [Full API documentation](https://github.com/wrappedcbdc/cngn-typescript-library/wiki)
-- **Email Support**: support@withconvexity.com
-- **Website**: [https://cngn.co](https://cngn.co)
-
-### Getting Help
-
-1. Check the [documentation](https://github.com/wrappedcbdc/cngn-typescript-library/wiki)
-2. Search [existing issues](https://github.com/wrappedcbdc/cngn-typescript-library/issues)
-3. Create a [new issue](https://github.com/wrappedcbdc/cngn-typescript-library/issues/new) with detailed information
-
-## 📄 License
-
-This project is licensed under the [ISC License](https://choosealicense.com/licenses/isc/).
-
----
-
-## 🏷️ Keywords
-
-`cNGN`, `Nigerian Naira`, `Stablecoin`, `TypeScript`, `JavaScript`, `Blockchain`, `Crypto`, `Fintech`, `Nigeria`, `Digital Payments`, `API SDK`, `Ethereum`, `Binance Smart Chain`, `Polygon`, `Tron`, `Cross-chain`, `Virtual Accounts`, `Banking Integration`, `Merchant API`, `CBDC`
-
-**Made with ❤️ by [Convexity](https://withconvexity.com) for the Nigerian fintech ecosystem**
+```sh
+npm ci
+npm run check
+```
