@@ -36,7 +36,7 @@ export class cNGNManager {
 
     constructor(private readonly secrets: Secrets ) {
         this.axiosInstance = axios.create({
-            baseURL: `http://localhost:8081/${API_CURRENT_VERSION}/api`,
+            baseURL: `https://api.cngn.co/${API_CURRENT_VERSION}/api`,
             headers: {
                 'Authorization': `Bearer ${this.secrets.apiKey}`,
                 'Content-Type': 'application/json'

@@ -1,6 +1,6 @@
 {
   "name": "cngn-typescript-library",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "A lightweight Typescript library to give you the best experience with managing your cNGN merchant account",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "dev": "ts-node src/endpoints.ts",
+    "dev": "ts-node src/test.engine.ts",
     "example": "ts-node examples/usage.ts",
     "test:endpoints": "ts-node scripts/test-endpoints.ts",
     "release": "npm run test && npm run build && npm version patch && npm pack && gh release create $(node -p \"require('./package.json').version\") --generate-notes"
