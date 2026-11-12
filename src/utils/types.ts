@@ -200,6 +200,10 @@ export interface Swap {
     destinationAddress: string;
     originNetworkId: string;
     callbackUrl?: string;
+    /**
+     * Required when the origin network is Canton: the Canton party (`<hint>::1220<64 hex>`) that will send the cNGN.
+     * Only a payment from this party settles the swap. Optional for other origins.
+     */
     senderAddress?: string
 }
 

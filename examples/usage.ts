@@ -167,6 +167,18 @@ export async function swapExample(manager: cNGNManager, originNetworkId: string,
     console.log('swap:', swap.data);
 }
 
+/** Bridge cNGN out of Canton. senderAddress is required: only a payment from that party settles the swap. */
+export async function swapFromCantonExample(manager: cNGNManager, cantonNetworkId: string, destinationNetworkId: string) {
+    const swap = await manager.swapAsset({
+        originNetworkId: cantonNetworkId,
+        destinationNetworkId,
+        destinationAddress: '0xe27a0DDBfB5F4b2eb1b99e3FB2d43040f3D31F58',
+        senderAddress: 'my-wallet::12208eaecdda35fc2ee0dfd41d51606833f0c42f4e44230482643f1cfe667fe5a5dd',
+    });
+    // Transfer cNGN from senderAddress to this one-off Canton party.
+    console.log('send cNGN to:', swap.data?.receivableAddress);
+}
+
 /** One-off account for collecting a single expected payment. */
 export async function temporaryVirtualAccountExample(manager: cNGNManager) {
     const account = await manager.createTemporaryVirtualAccount({

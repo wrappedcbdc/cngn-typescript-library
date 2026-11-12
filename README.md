@@ -385,6 +385,30 @@ console.log('Swap Response:', {
 });
 ```
 
+##### Swapping from Canton
+
+A swap whose origin is Canton **requires `senderAddress`**: the Canton party that will send the cNGN. The API stores it with the swap and only settles the swap from a payment sent by that party. A payment from any other party is ignored and the funds stay on the swap address, so send from the same party you declare.
+
+```typescript
+const canton = networks.data?.find(n => n.short_name === 'CANTON');
+
+const swap = await cngnManager.swapAsset({
+    originNetworkId: canton!.id,
+    destinationNetworkId: baseNetwork!.id,
+    destinationAddress: '0xfaEcCB96f7C6985E64cfB055221dc512D9fD0845',
+    // Required for Canton: <hint>::1220<64 hex>
+    senderAddress: 'my-wallet::12208eaecdda35fc2ee0dfd41d51606833f0c42f4e44230482643f1cfe667fe5a5dd'
+});
+
+// receivableAddress is a one-off Canton party for this swap. Transfer cNGN to it from senderAddress.
+console.log(swap.data?.receivableAddress);
+```
+
+- A missing or invalid `senderAddress` is rejected with `400 senderAddress (the Canton party that will send the cNGN) is required for a swap from Canton`.
+- Each swap gets its own receiving party, so do not reuse `receivableAddress` for another swap.
+- Send one payment per swap. The swap settles from the first payment received from `senderAddress`.
+- For other origin networks `senderAddress` stays optional.
+
 #### Network Management
 
 ```typescript
@@ -725,7 +749,7 @@ enum Network {
       destinationAddress: string;
       originNetworkId: string; // UUID from getSupportedNetworks()
       callbackUrl?: string;
-      senderAddress?: string;
+      senderAddress?: string; // Required when the origin network is Canton
   }
   ```
 - `SwapResponse` - Swap transaction response
